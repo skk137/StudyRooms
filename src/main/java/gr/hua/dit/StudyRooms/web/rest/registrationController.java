@@ -4,6 +4,9 @@ package gr.hua.dit.StudyRooms.web.rest;
 import gr.hua.dit.StudyRooms.core.model.Person;
 import gr.hua.dit.StudyRooms.core.model.PersonType;
 import gr.hua.dit.StudyRooms.core.repository.PersonRepository;
+import gr.hua.dit.StudyRooms.core.service.PersonService;
+import gr.hua.dit.StudyRooms.core.service.model.CreatePersonRequest;
+import gr.hua.dit.StudyRooms.core.service.model.PersonView;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,11 +23,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class registrationController {
 
     //Saving in DB, through JPA Repository.
-    private final PersonRepository personRepository;
-    public registrationController(PersonRepository personRepository) {
-        if (personRepository == null) throw new NullPointerException("personRepository is null");
-        this.personRepository = personRepository;
+    private final PersonService personService; //debug
+
+
+    public registrationController(PersonService personService, PersonService personRepository) {
+        if (personService == null) throw new NullPointerException("personService is null");
+        this.personService = personService;
     }
+
 
 
     //Serves the registration form (HTML FILE)
@@ -32,7 +38,7 @@ public class registrationController {
     public String showRegistrationForm(final Model model) {
 
         //Αρχικοποίηση αδειου person, καθώς θα γεμίσει απο το form.
-        model.addAttribute("person", new Person(null,"", PersonType.STUDENT, "", "","","","",null));
+        model.addAttribute("createPersonRequest", new CreatePersonRequest( PersonType.STUDENT, "", "","","","",""));
 
         return "register"; //name of thymeleaf
     }
@@ -41,13 +47,10 @@ public class registrationController {
     //handles the registration form Submission (POST HTTP REQUEST)
     @PostMapping("/register")
     public String showRegistrationFormSubmission(
-            @ModelAttribute("person") Person person,
+            @ModelAttribute("createPersonRequest") CreatePersonRequest createPersonRequest,
             final Model model)
     {   //Managing post
-        System.out.println(person.toString()); //PRE SAVE
-        person=this.personRepository.save(person);
-        System.out.println(person.toString()); //POST SAVE
-        model.addAttribute("person", person);
+        final PersonView personView = this.personService.createPerson(createPersonRequest);
         return "redirect:/login"; //redirect στο login μετα το success registeration.
 
     }
