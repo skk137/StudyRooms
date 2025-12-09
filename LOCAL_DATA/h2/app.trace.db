@@ -1106,3 +1106,81 @@ java.sql.SQLClientInfoException: Client info name 'ApplicationName' not supporte
 	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
 	at java.base/java.lang.Thread.run(Thread.java:840)
+2025-12-09 23:02:20.808446+02:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_person" already exists; SQL statement:
+create global temporary table HTE_person(rn_ integer not null, created_at timestamp(6) with time zone, id bigint, hua_id varchar(30), first_name varchar(150), last_name varchar(150), email varchar(255), password_hash varchar(255), phone varchar(255), type enum ('LITERATURE','STUDENT'), primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-09 23:02:54.083124+02:00 jdbc[23]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_person" already exists; SQL statement:
+create global temporary table HTE_person(rn_ integer not null, created_at timestamp(6) with time zone, id bigint, hua_id varchar(30), first_name varchar(150), last_name varchar(150), email varchar(255), password_hash varchar(255), phone varchar(255), type enum ('LITERATURE','STUDENT'), primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-09 23:03:03.254750+02:00 jdbc[33]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_person" already exists; SQL statement:
+create global temporary table HTE_person(rn_ integer not null, created_at timestamp(6) with time zone, id bigint, hua_id varchar(30), first_name varchar(150), last_name varchar(150), email varchar(255), password_hash varchar(255), phone varchar(255), type enum ('LITERATURE','STUDENT'), primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-09 23:03:05.341438+02:00 jdbc[43]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_person" already exists; SQL statement:
+create global temporary table HTE_person(rn_ integer not null, created_at timestamp(6) with time zone, id bigint, hua_id varchar(30), first_name varchar(150), last_name varchar(150), email varchar(255), password_hash varchar(255), phone varchar(255), type enum ('LITERATURE','STUDENT'), primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-09 23:03:09.509391+02:00 jdbc[53]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_person" already exists; SQL statement:
+create global temporary table HTE_person(rn_ integer not null, created_at timestamp(6) with time zone, id bigint, hua_id varchar(30), first_name varchar(150), last_name varchar(150), email varchar(255), password_hash varchar(255), phone varchar(255), type enum ('LITERATURE','STUDENT'), primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-09 23:03:11.457264+02:00 jdbc[63]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_person" already exists; SQL statement:
+create global temporary table HTE_person(rn_ integer not null, created_at timestamp(6) with time zone, id bigint, hua_id varchar(30), first_name varchar(150), last_name varchar(150), email varchar(255), password_hash varchar(255), phone varchar(255), type enum ('LITERATURE','STUDENT'), primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-09 23:03:36.685408+02:00 jdbc[73]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_person" already exists; SQL statement:
+create global temporary table HTE_person(rn_ integer not null, created_at timestamp(6) with time zone, id bigint, hua_id varchar(30), first_name varchar(150), last_name varchar(150), email varchar(255), password_hash varchar(255), phone varchar(255), type enum ('LITERATURE','STUDENT'), primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-09 23:03:38.621918+02:00 jdbc[83]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_person" already exists; SQL statement:
+create global temporary table HTE_person(rn_ integer not null, created_at timestamp(6) with time zone, id bigint, hua_id varchar(30), first_name varchar(150), last_name varchar(150), email varchar(255), password_hash varchar(255), phone varchar(255), type enum ('LITERATURE','STUDENT'), primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-09 23:03:48.026109+02:00 jdbc[93]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_person" already exists; SQL statement:
+create global temporary table HTE_person(rn_ integer not null, created_at timestamp(6) with time zone, id bigint, hua_id varchar(30), first_name varchar(150), last_name varchar(150), email varchar(255), password_hash varchar(255), phone varchar(255), type enum ('LITERATURE','STUDENT'), primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-09 23:17:18.352915+02:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_person" already exists; SQL statement:
+create global temporary table HTE_person(rn_ integer not null, created_at timestamp(6) with time zone, id bigint, hua_id varchar(30), first_name varchar(150), last_name varchar(150), email varchar(255), password_hash varchar(255), phone varchar(255), type enum ('LITERATURE','STUDENT'), primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-09 23:17:20.343759+02:00 jdbc[23]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_person" already exists; SQL statement:
+create global temporary table HTE_person(rn_ integer not null, created_at timestamp(6) with time zone, id bigint, hua_id varchar(30), first_name varchar(150), last_name varchar(150), email varchar(255), password_hash varchar(255), phone varchar(255), type enum ('LITERATURE','STUDENT'), primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-09 23:17:31.420189+02:00 jdbc[33]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_person" already exists; SQL statement:
+create global temporary table HTE_person(rn_ integer not null, created_at timestamp(6) with time zone, id bigint, hua_id varchar(30), first_name varchar(150), last_name varchar(150), email varchar(255), password_hash varchar(255), phone varchar(255), type enum ('LITERATURE','STUDENT'), primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-09 23:17:33.408198+02:00 jdbc[43]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_person" already exists; SQL statement:
+create global temporary table HTE_person(rn_ integer not null, created_at timestamp(6) with time zone, id bigint, hua_id varchar(30), first_name varchar(150), last_name varchar(150), email varchar(255), password_hash varchar(255), phone varchar(255), type enum ('LITERATURE','STUDENT'), primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-09 23:25:50.409868+02:00 jdbc[53]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_person" already exists; SQL statement:
+create global temporary table HTE_person(rn_ integer not null, created_at timestamp(6) with time zone, id bigint, hua_id varchar(30), first_name varchar(150), last_name varchar(150), email varchar(255), password_hash varchar(255), phone varchar(255), type enum ('LITERATURE','STUDENT'), primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-09 23:27:03.844318+02:00 jdbc[63]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_person" already exists; SQL statement:
+create global temporary table HTE_person(rn_ integer not null, created_at timestamp(6) with time zone, id bigint, hua_id varchar(30), first_name varchar(150), last_name varchar(150), email varchar(255), password_hash varchar(255), phone varchar(255), type enum ('LITERATURE','STUDENT'), primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-09 23:27:05.786735+02:00 jdbc[73]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_person" already exists; SQL statement:
+create global temporary table HTE_person(rn_ integer not null, created_at timestamp(6) with time zone, id bigint, hua_id varchar(30), first_name varchar(150), last_name varchar(150), email varchar(255), password_hash varchar(255), phone varchar(255), type enum ('LITERATURE','STUDENT'), primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-09 23:27:31.985140+02:00 jdbc[83]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_person" already exists; SQL statement:
+create global temporary table HTE_person(rn_ integer not null, created_at timestamp(6) with time zone, id bigint, hua_id varchar(30), first_name varchar(150), last_name varchar(150), email varchar(255), password_hash varchar(255), phone varchar(255), type enum ('LITERATURE','STUDENT'), primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-09 23:27:33.915477+02:00 jdbc[93]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_person" already exists; SQL statement:
+create global temporary table HTE_person(rn_ integer not null, created_at timestamp(6) with time zone, id bigint, hua_id varchar(30), first_name varchar(150), last_name varchar(150), email varchar(255), password_hash varchar(255), phone varchar(255), type enum ('LITERATURE','STUDENT'), primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-09 23:29:37.546170+02:00 jdbc[103]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_person" already exists; SQL statement:
+create global temporary table HTE_person(rn_ integer not null, created_at timestamp(6) with time zone, id bigint, hua_id varchar(30), first_name varchar(150), last_name varchar(150), email varchar(255), password_hash varchar(255), phone varchar(255), type enum ('LITERATURE','STUDENT'), primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-09 23:29:39.603168+02:00 jdbc[113]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_person" already exists; SQL statement:
+create global temporary table HTE_person(rn_ integer not null, created_at timestamp(6) with time zone, id bigint, hua_id varchar(30), first_name varchar(150), last_name varchar(150), email varchar(255), password_hash varchar(255), phone varchar(255), type enum ('LITERATURE','STUDENT'), primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-09 23:29:54.562270+02:00 jdbc[123]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_person" already exists; SQL statement:
+create global temporary table HTE_person(rn_ integer not null, created_at timestamp(6) with time zone, id bigint, hua_id varchar(30), first_name varchar(150), last_name varchar(150), email varchar(255), password_hash varchar(255), phone varchar(255), type enum ('LITERATURE','STUDENT'), primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-09 23:30:31.739380+02:00 jdbc[133]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_person" already exists; SQL statement:
+create global temporary table HTE_person(rn_ integer not null, created_at timestamp(6) with time zone, id bigint, hua_id varchar(30), first_name varchar(150), last_name varchar(150), email varchar(255), password_hash varchar(255), phone varchar(255), type enum ('LITERATURE','STUDENT'), primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-09 23:30:33.678512+02:00 jdbc[143]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_person" already exists; SQL statement:
+create global temporary table HTE_person(rn_ integer not null, created_at timestamp(6) with time zone, id bigint, hua_id varchar(30), first_name varchar(150), last_name varchar(150), email varchar(255), password_hash varchar(255), phone varchar(255), type enum ('LITERATURE','STUDENT'), primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-09 23:32:13.226528+02:00 jdbc[153]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_person" already exists; SQL statement:
+create global temporary table HTE_person(rn_ integer not null, created_at timestamp(6) with time zone, id bigint, hua_id varchar(30), first_name varchar(150), last_name varchar(150), email varchar(255), password_hash varchar(255), phone varchar(255), type enum ('LITERATURE','STUDENT'), primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-09 23:32:15.178607+02:00 jdbc[163]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_person" already exists; SQL statement:
+create global temporary table HTE_person(rn_ integer not null, created_at timestamp(6) with time zone, id bigint, hua_id varchar(30), first_name varchar(150), last_name varchar(150), email varchar(255), password_hash varchar(255), phone varchar(255), type enum ('LITERATURE','STUDENT'), primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-09 23:32:33.237057+02:00 jdbc[173]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_person" already exists; SQL statement:
+create global temporary table HTE_person(rn_ integer not null, created_at timestamp(6) with time zone, id bigint, hua_id varchar(30), first_name varchar(150), last_name varchar(150), email varchar(255), password_hash varchar(255), phone varchar(255), type enum ('LITERATURE','STUDENT'), primary key (rn_)) TRANSACTIONAL [42101-232]
