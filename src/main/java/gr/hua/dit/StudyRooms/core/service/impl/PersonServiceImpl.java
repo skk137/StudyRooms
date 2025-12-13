@@ -4,8 +4,10 @@ package gr.hua.dit.StudyRooms.core.service.impl;
 import gr.hua.dit.StudyRooms.core.model.Person;
 import gr.hua.dit.StudyRooms.core.model.PersonType;
 import gr.hua.dit.StudyRooms.core.repository.PersonRepository;
+import gr.hua.dit.StudyRooms.core.service.Mapper.PersonMapper;
 import gr.hua.dit.StudyRooms.core.service.PersonService;
 import gr.hua.dit.StudyRooms.core.service.model.CreatePersonRequest;
+import gr.hua.dit.StudyRooms.core.service.model.CreatePersonResult;
 import gr.hua.dit.StudyRooms.core.service.model.PersonView;
 import org.springframework.stereotype.Service;
 
@@ -15,10 +17,15 @@ import java.util.List;
 public final class PersonServiceImpl implements PersonService {
 
     private final PersonRepository personRepository;
+    private final PersonMapper personMapper;
 
-    public PersonServiceImpl(final PersonRepository personRepository) {
+    //Constructor
+    public PersonServiceImpl(final PersonRepository personRepository, final PersonMapper personMapper) {
         if (personRepository == null) throw new NullPointerException("personRepository is null");
+        if (personMapper == null) throw new NullPointerException("personMapper is null");
+
         this.personRepository = personRepository;
+        this.personMapper = personMapper;
     }
 
 
@@ -27,8 +34,9 @@ public final class PersonServiceImpl implements PersonService {
         return List.of();
     }
 
+
     @Override
-    public PersonView createPerson(CreatePersonRequest createPersonRequest) {
+    public CreatePersonResult createPerson(CreatePersonRequest createPersonRequest) {
         if (createPersonRequest==null) throw new NullPointerException("createPersonRequest==null");
 
         final PersonType type = createPersonRequest.PersonType();
@@ -42,7 +50,8 @@ public final class PersonServiceImpl implements PersonService {
 
         // Email address validation.
         if (!email.toLowerCase().endsWith("@hua.gr")) {
-            throw new IllegalArgumentException("Μόνο emails με @hua.gr επιτρέπονται");
+            return CreatePersonResult.fail("Μόνο emails με @hua.gr επιτρέπονται");
+            //throw new IllegalArgumentException("Μόνο emails με @hua.gr επιτρέπονται");
         }
 
 
@@ -103,7 +112,7 @@ public final class PersonServiceImpl implements PersonService {
         person=this.personRepository.save(person);
 
         //Map person to personview.
-        final PersonView personViewview = null ; //to-do
+        final PersonView personView = this.personMapper.convertPersonToPersonView(person) ; //to-do
 
 
 
@@ -111,6 +120,6 @@ public final class PersonServiceImpl implements PersonService {
 
 
 
-        return null;
+        return CreatePersonResult.success(personView);
     }
 }

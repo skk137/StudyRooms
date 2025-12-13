@@ -1,0 +1,28 @@
+package gr.hua.dit.StudyRooms.core.service.model;
+import gr.hua.dit.StudyRooms.core.model.Person;
+
+
+
+
+
+//CreatePersonResult DTO
+public record CreatePersonResult(
+        Boolean created,
+        String reason,
+        PersonView personView
+) {
+
+    public static CreatePersonResult success(final PersonView personView){
+        if (personView == null) throw new NullPointerException();
+
+        return new CreatePersonResult(true, null, personView);
+    }
+
+    public static CreatePersonResult fail(final String reason){
+        if (reason == null) throw new NullPointerException();
+        if (reason.isBlank()) throw new IllegalArgumentException();
+
+        return new CreatePersonResult(false, reason, null);
+    }
+
+}

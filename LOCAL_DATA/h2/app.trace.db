@@ -1273,3 +1273,15 @@ java.sql.SQLClientInfoException: Client info name 'ApplicationName' not supporte
 	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
 	at java.base/java.lang.Thread.run(Thread.java:840)
+2025-12-13 00:39:14.105504+02:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_person" already exists; SQL statement:
+create global temporary table HTE_person(rn_ integer not null, created_at timestamp(6) with time zone, id bigint, hua_id varchar(30), first_name varchar(150), last_name varchar(150), email varchar(255), password_hash varchar(255), phone varchar(255), type enum ('LITERATURE','STUDENT'), primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-13 00:40:51.791405+02:00 jdbc[23]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_person" already exists; SQL statement:
+create global temporary table HTE_person(rn_ integer not null, created_at timestamp(6) with time zone, id bigint, hua_id varchar(30), first_name varchar(150), last_name varchar(150), email varchar(255), password_hash varchar(255), phone varchar(255), type enum ('LITERATURE','STUDENT'), primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-13 00:54:49.671665+02:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_person" already exists; SQL statement:
+create global temporary table HTE_person(rn_ integer not null, created_at timestamp(6) with time zone, id bigint, hua_id varchar(30), first_name varchar(150), last_name varchar(150), email varchar(255), password_hash varchar(255), phone varchar(255), type enum ('LITERATURE','STUDENT'), primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-13 00:54:51.728097+02:00 jdbc[23]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_person" already exists; SQL statement:
+create global temporary table HTE_person(rn_ integer not null, created_at timestamp(6) with time zone, id bigint, hua_id varchar(30), first_name varchar(150), last_name varchar(150), email varchar(255), password_hash varchar(255), phone varchar(255), type enum ('LITERATURE','STUDENT'), primary key (rn_)) TRANSACTIONAL [42101-232]

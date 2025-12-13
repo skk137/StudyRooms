@@ -2,6 +2,7 @@ package gr.hua.dit.StudyRooms.core.service;
 
 
 import gr.hua.dit.StudyRooms.core.service.model.CreatePersonRequest;
+import gr.hua.dit.StudyRooms.core.service.model.CreatePersonResult;
 import gr.hua.dit.StudyRooms.core.service.model.PersonView;
 
 import java.util.List;
@@ -12,8 +13,8 @@ public interface PersonService {
 
     List<PersonView> getPeople();
 
-    PersonView createPerson(CreatePersonRequest createPersonRequest);
-
+    CreatePersonResult createPerson(CreatePersonRequest createPersonRequest);
+    
 
 
 

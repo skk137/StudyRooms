@@ -1,84 +1,102 @@
 <!DOCTYPE html>
-<html
-        xmlns:th="https://www.thymeleaf.org"
-        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-        layout:decorate="~{base}">
-
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Registration</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Study Rooms</title>
+
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
+<body class="bg-light">
 
-<body>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
 
-<header layout:fragment="header">
-    <h1>Office Hours <small>/ Registration</small></h1>
-</header>
+            <!-- Registration -->
+            <div class="card shadow-sm">
+                <div class="card-body">
 
-<section layout:fragment="main">
+                    <h3 class="text-center mb-4">Register for Study Rooms</h3>
 
-    <form th:action="@{/register}" method="post" th:object="${createPersonRequest}">
+                    <!-- Error Message -->
+                    <div class="alert alert-danger mb-3" th:if="${errorMessage}" th:text="${errorMessage}"></div>
 
-        <!-- ERROR MESSAGE -->
-        <div class="text-center mb-3" th:if="${errorMessage != null}">
-            <p class="text-danger m-0 p-0" th:text="${errorMessage}"></p>
+
+
+                    <!-- Registration Form -->
+                    <form th:action="@{/register}" method="post" th:object="${createPersonRequest}">
+
+                        <!-- Person Type -->
+                        <div class="mb-3">
+                            <label class="form-label">I am:</label>
+                            <select th:field="*{PersonType}" class="form-select">
+                                <option value="LITERATURE">LITERATURE</option>
+                                <option value="STUDENT">STUDENT</option>
+                            </select>
+                            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('PersonType')}" th:errors="*{PersonType}"></div>
+                        </div>
+
+                        <!-- HUA ID -->
+                        <div class="mb-3">
+                            <label class="form-label">HUA ID</label>
+                            <input type="text" th:field="*{huaId}" class="form-control" placeholder="Example: it2022095" required />
+                            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('huaId')}" th:errors="*{huaId}"></div>
+                        </div>
+
+                        <!-- First Name -->
+                        <div class="mb-3">
+                            <label class="form-label">First Name</label>
+                            <input type="text" th:field="*{FirstName}" class="form-control" required />
+                            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('FirstName')}" th:errors="*{FirstName}"></div>
+                        </div>
+
+                        <!-- Last Name -->
+                        <div class="mb-3">
+                            <label class="form-label">Last Name</label>
+                            <input type="text" th:field="*{LastName}" class="form-control" required />
+                            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('LastName')}" th:errors="*{LastName}"></div>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="mb-3">
+                            <label class="form-label">Email Address</label>
+                            <input type="email" th:field="*{Email}" class="form-control" required />
+                            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('Email')}" th:errors="*{Email}"></div>
+                        </div>
+
+                        <!-- Phone -->
+                        <div class="mb-3">
+                            <label class="form-label">Mobile Phone Number</label>
+                            <input type="tel" th:field="*{Phone}" class="form-control" required />
+                            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('Phone')}" th:errors="*{Phone}"></div>
+                        </div>
+
+                        <!-- Password -->
+                        <div class="mb-4">
+                            <label class="form-label">Password</label>
+                            <input type="password" th:field="*{passwordHash}" class="form-control" required />
+                            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('passwordHash')}" th:errors="*{passwordHash}"></div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">Register</button>
+                    </form>
+
+                    <div class="text-center mt-3">
+                        <small>Already have an account? <a th:href="@{/login}">Log in</a></small>
+                    </div>
+
+                </div>
+            </div>
+
         </div>
+    </div>
+</div>
 
-        <div class="mb-3">
-            <label class="form-label">I am:</label>
-            <select name="type" th:field="*{PersonType}" class="form-select">
-                <option value="LITERATURE">LITERATURE</option>
-                <option value="STUDENT">STUDENT</option>
-            </select>
-            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('PersonType')}" th:errors="*{PersonType}"></div>
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">HUA ID</label>
-            <input type="text" name="huaId" th:field="*{huaId}" class="form-control" placeholder="Example: it2022095" required />
-            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('huaId')}" th:errors="*{huaId}"></div>
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">First Name</label>
-            <input type="text" name="firstName" th:field="*{FirstName}" class="form-control" required />
-            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('FirstName')}" th:errors="*{FirstName}"></div>
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Last Name</label>
-            <input type="text" name="lastName" th:field="*{LastName}" class="form-control" required />
-            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('LastName')}" th:errors="*{LastName}"></div>
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Email Address</label>
-            <input type="email" name="emailAddress" th:field="*{Email}" class="form-control" required />
-            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('Email')}" th:errors="*{Email}"></div>
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Mobile Phone Number</label>
-            <input type="tel" name="mobilePhoneNumber" th:field="*{Phone}" class="form-control" required />
-            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('Phone')}" th:errors="*{Phone}"></div>
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Password</label>
-            <input type="password" name="rawPassword" th:field="*{passwordHash}" class="form-control" required />
-            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('passwordHash')}" th:errors="*{passwordHash}"></div>
-        </div>
-
-        <div class="mb-4">
-            <button type="submit" class="btn btn-primary">Register</button>
-        </div>
-
-        <p class="m-0 p-0">
-            <a th:href="@{/login}">Already have an account? Log in</a>
-        </p>
-
-    </form>
-
-</section>
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>
