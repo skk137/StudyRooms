@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Literature Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<div class="container mt-5">
+    <h2>Rooms Management</h2>
+    <a href="/literature/rooms/new" class="btn btn-primary mb-3">New Room</a>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Capacity</th>
+            <th>Location</th>
+            <th>Open</th>
+            <th>Close</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="room : ${rooms}">
+            <td th:text="${room.name}"></td>
+            <td th:text="${room.capacity}"></td>
+            <td th:text="${room.location}"></td>
+            <td th:text="${room.openTime}"></td>
+            <td th:text="${room.closeTime}"></td>
+            <td>
+                <a th:href="@{/literature/rooms/edit/{id}(id=${room.id})}" class="btn btn-sm btn-warning">Edit</a>
+                <a th:href="@{/literature/rooms/delete/{id}(id=${room.id})}" class="btn btn-sm btn-danger">Delete</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
