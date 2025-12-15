@@ -1285,3 +1285,153 @@ create global temporary table HTE_person(rn_ integer not null, created_at timest
 2025-12-13 00:54:51.728097+02:00 jdbc[23]: exception
 org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_person" already exists; SQL statement:
 create global temporary table HTE_person(rn_ integer not null, created_at timestamp(6) with time zone, id bigint, hua_id varchar(30), first_name varchar(150), last_name varchar(150), email varchar(255), password_hash varchar(255), phone varchar(255), type enum ('LITERATURE','STUDENT'), primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-15 01:02:11.423956+02:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_booking" already exists; SQL statement:
+create global temporary table HTE_booking(canceled boolean, date date, end_time time(6), rn_ integer not null, start_time time(6), id bigint, room_id bigint, student_id bigint, primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-15 01:02:11.432956+02:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_room" already exists; SQL statement:
+create global temporary table HTE_room(capacity integer, close_time time(6), open_time time(6), rn_ integer not null, id bigint, name varchar(255), primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-15 01:02:11.434503+02:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_person" already exists; SQL statement:
+create global temporary table HTE_person(rn_ integer not null, created_at timestamp(6) with time zone, id bigint, hua_id varchar(30), first_name varchar(150), last_name varchar(150), email varchar(255), password_hash varchar(255), phone varchar(255), type enum ('LITERATURE','STUDENT'), primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-15 01:41:55.704368+02:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_booking" already exists; SQL statement:
+create global temporary table HTE_booking(canceled boolean, date date, end_time time(6), rn_ integer not null, start_time time(6), id bigint, room_id bigint, student_id bigint, primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-15 01:41:55.710375+02:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_room" already exists; SQL statement:
+create global temporary table HTE_room(capacity integer, close_time time(6), open_time time(6), rn_ integer not null, id bigint, name varchar(255), primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-15 01:41:55.711378+02:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_person" already exists; SQL statement:
+create global temporary table HTE_person(rn_ integer not null, created_at timestamp(6) with time zone, id bigint, hua_id varchar(30), first_name varchar(150), last_name varchar(150), email varchar(255), password_hash varchar(255), phone varchar(255), type enum ('LITERATURE','STUDENT'), primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-15 01:41:58.142957+02:00 jdbc[23]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_booking" already exists; SQL statement:
+create global temporary table HTE_booking(canceled boolean, date date, end_time time(6), rn_ integer not null, start_time time(6), id bigint, room_id bigint, student_id bigint, primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-15 01:41:58.142957+02:00 jdbc[23]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_room" already exists; SQL statement:
+create global temporary table HTE_room(capacity integer, close_time time(6), open_time time(6), rn_ integer not null, id bigint, name varchar(255), primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-15 01:41:58.143957+02:00 jdbc[23]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_person" already exists; SQL statement:
+create global temporary table HTE_person(rn_ integer not null, created_at timestamp(6) with time zone, id bigint, hua_id varchar(30), first_name varchar(150), last_name varchar(150), email varchar(255), password_hash varchar(255), phone varchar(255), type enum ('LITERATURE','STUDENT'), primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-15 01:42:04.623922+02:00 jdbc[33]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_booking" already exists; SQL statement:
+create global temporary table HTE_booking(canceled boolean, date date, end_time time(6), rn_ integer not null, start_time time(6), id bigint, room_id bigint, student_id bigint, primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-15 01:42:04.624921+02:00 jdbc[33]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_room" already exists; SQL statement:
+create global temporary table HTE_room(capacity integer, close_time time(6), open_time time(6), rn_ integer not null, id bigint, name varchar(255), primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-15 01:42:04.625923+02:00 jdbc[33]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_person" already exists; SQL statement:
+create global temporary table HTE_person(rn_ integer not null, created_at timestamp(6) with time zone, id bigint, hua_id varchar(30), first_name varchar(150), last_name varchar(150), email varchar(255), password_hash varchar(255), phone varchar(255), type enum ('LITERATURE','STUDENT'), primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-15 01:42:06.804320+02:00 jdbc[43]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_booking" already exists; SQL statement:
+create global temporary table HTE_booking(canceled boolean, date date, end_time time(6), rn_ integer not null, start_time time(6), id bigint, room_id bigint, student_id bigint, primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-15 01:42:06.805320+02:00 jdbc[43]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_room" already exists; SQL statement:
+create global temporary table HTE_room(capacity integer, close_time time(6), open_time time(6), rn_ integer not null, id bigint, name varchar(255), primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-15 01:42:06.805320+02:00 jdbc[43]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_person" already exists; SQL statement:
+create global temporary table HTE_person(rn_ integer not null, created_at timestamp(6) with time zone, id bigint, hua_id varchar(30), first_name varchar(150), last_name varchar(150), email varchar(255), password_hash varchar(255), phone varchar(255), type enum ('LITERATURE','STUDENT'), primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-15 01:44:23.487538+02:00 jdbc[53]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_booking" already exists; SQL statement:
+create global temporary table HTE_booking(canceled boolean, date date, end_time time(6), rn_ integer not null, start_time time(6), id bigint, room_id bigint, student_id bigint, primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-15 01:44:23.488543+02:00 jdbc[53]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_room" already exists; SQL statement:
+create global temporary table HTE_room(capacity integer, close_time time(6), open_time time(6), rn_ integer not null, id bigint, name varchar(255), primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-15 01:44:23.489531+02:00 jdbc[53]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_person" already exists; SQL statement:
+create global temporary table HTE_person(rn_ integer not null, created_at timestamp(6) with time zone, id bigint, hua_id varchar(30), first_name varchar(150), last_name varchar(150), email varchar(255), password_hash varchar(255), phone varchar(255), type enum ('LITERATURE','STUDENT'), primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-15 01:44:25.667596+02:00 jdbc[63]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_booking" already exists; SQL statement:
+create global temporary table HTE_booking(canceled boolean, date date, end_time time(6), rn_ integer not null, start_time time(6), id bigint, room_id bigint, student_id bigint, primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-15 01:44:25.667596+02:00 jdbc[63]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_room" already exists; SQL statement:
+create global temporary table HTE_room(capacity integer, close_time time(6), open_time time(6), rn_ integer not null, id bigint, name varchar(255), primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-15 01:44:25.668592+02:00 jdbc[63]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_person" already exists; SQL statement:
+create global temporary table HTE_person(rn_ integer not null, created_at timestamp(6) with time zone, id bigint, hua_id varchar(30), first_name varchar(150), last_name varchar(150), email varchar(255), password_hash varchar(255), phone varchar(255), type enum ('LITERATURE','STUDENT'), primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-15 01:44:50.217606+02:00 jdbc[73]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_booking" already exists; SQL statement:
+create global temporary table HTE_booking(canceled boolean, date date, end_time time(6), rn_ integer not null, start_time time(6), id bigint, room_id bigint, student_id bigint, primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-15 01:44:50.218608+02:00 jdbc[73]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_room" already exists; SQL statement:
+create global temporary table HTE_room(capacity integer, close_time time(6), open_time time(6), rn_ integer not null, id bigint, name varchar(255), primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-15 01:44:50.220600+02:00 jdbc[73]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_person" already exists; SQL statement:
+create global temporary table HTE_person(rn_ integer not null, created_at timestamp(6) with time zone, id bigint, hua_id varchar(30), first_name varchar(150), last_name varchar(150), email varchar(255), password_hash varchar(255), phone varchar(255), type enum ('LITERATURE','STUDENT'), primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-15 01:44:52.538562+02:00 jdbc[83]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_booking" already exists; SQL statement:
+create global temporary table HTE_booking(canceled boolean, date date, end_time time(6), rn_ integer not null, start_time time(6), id bigint, room_id bigint, student_id bigint, primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-15 01:44:52.539563+02:00 jdbc[83]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_room" already exists; SQL statement:
+create global temporary table HTE_room(capacity integer, close_time time(6), open_time time(6), rn_ integer not null, id bigint, name varchar(255), primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-15 01:44:52.540562+02:00 jdbc[83]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_person" already exists; SQL statement:
+create global temporary table HTE_person(rn_ integer not null, created_at timestamp(6) with time zone, id bigint, hua_id varchar(30), first_name varchar(150), last_name varchar(150), email varchar(255), password_hash varchar(255), phone varchar(255), type enum ('LITERATURE','STUDENT'), primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-15 01:55:17.956880+02:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_booking" already exists; SQL statement:
+create global temporary table HTE_booking(canceled boolean, date date, end_time time(6), rn_ integer not null, start_time time(6), id bigint, room_id bigint, student_id bigint, primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-15 01:55:17.961877+02:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_room" already exists; SQL statement:
+create global temporary table HTE_room(capacity integer, close_time time(6), open_time time(6), rn_ integer not null, id bigint, name varchar(255), primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-15 01:55:17.963882+02:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_person" already exists; SQL statement:
+create global temporary table HTE_person(rn_ integer not null, created_at timestamp(6) with time zone, id bigint, hua_id varchar(30), first_name varchar(150), last_name varchar(150), email varchar(255), password_hash varchar(255), phone varchar(255), type enum ('LITERATURE','STUDENT'), primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-15 01:55:20.258554+02:00 jdbc[23]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_booking" already exists; SQL statement:
+create global temporary table HTE_booking(canceled boolean, date date, end_time time(6), rn_ integer not null, start_time time(6), id bigint, room_id bigint, student_id bigint, primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-15 01:55:20.258554+02:00 jdbc[23]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_room" already exists; SQL statement:
+create global temporary table HTE_room(capacity integer, close_time time(6), open_time time(6), rn_ integer not null, id bigint, name varchar(255), primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-15 01:55:20.259555+02:00 jdbc[23]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_person" already exists; SQL statement:
+create global temporary table HTE_person(rn_ integer not null, created_at timestamp(6) with time zone, id bigint, hua_id varchar(30), first_name varchar(150), last_name varchar(150), email varchar(255), password_hash varchar(255), phone varchar(255), type enum ('LITERATURE','STUDENT'), primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-15 00:09:28.790398Z jdbc[3]: exception
+java.sql.SQLClientInfoException: Client info name 'ApplicationName' not supported.
+	at org.h2.jdbc.JdbcConnection.setClientInfo(JdbcConnection.java:1624)
+	at com.intellij.database.remote.jdbc.impl.RemoteConnectionImpl.setClientInfo(RemoteConnectionImpl.java:469)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at java.rmi/sun.rmi.server.UnicastServerRef.dispatch(UnicastServerRef.java:360)
+	at java.rmi/sun.rmi.transport.Transport$1.run(Transport.java:200)
+	at java.rmi/sun.rmi.transport.Transport$1.run(Transport.java:197)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:712)
+	at java.rmi/sun.rmi.transport.Transport.serviceCall(Transport.java:196)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport.handleMessages(TCPTransport.java:587)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.run0(TCPTransport.java:828)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.lambda$run$0(TCPTransport.java:705)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:399)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.run(TCPTransport.java:704)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2025-12-15 00:09:42.112010Z jdbc[4]: exception
+java.sql.SQLClientInfoException: Client info name 'ApplicationName' not supported.
+	at org.h2.jdbc.JdbcConnection.setClientInfo(JdbcConnection.java:1624)
+	at com.intellij.database.remote.jdbc.impl.RemoteConnectionImpl.setClientInfo(RemoteConnectionImpl.java:469)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at java.rmi/sun.rmi.server.UnicastServerRef.dispatch(UnicastServerRef.java:360)
+	at java.rmi/sun.rmi.transport.Transport$1.run(Transport.java:200)
+	at java.rmi/sun.rmi.transport.Transport$1.run(Transport.java:197)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:712)
+	at java.rmi/sun.rmi.transport.Transport.serviceCall(Transport.java:196)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport.handleMessages(TCPTransport.java:587)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.run0(TCPTransport.java:828)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.lambda$run$0(TCPTransport.java:705)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:399)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.run(TCPTransport.java:704)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2025-12-15 02:32:18.767108+02:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_booking" already exists; SQL statement:
+create global temporary table HTE_booking(canceled boolean, date date, end_time time(6), rn_ integer not null, start_time time(6), id bigint, room_id bigint, student_id bigint, primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-15 02:32:18.773106+02:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_room" already exists; SQL statement:
+create global temporary table HTE_room(capacity integer, close_time time(6), open_time time(6), rn_ integer not null, id bigint, name varchar(255), primary key (rn_)) TRANSACTIONAL [42101-232]
+2025-12-15 02:32:18.774104+02:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "hte_person" already exists; SQL statement:
+create global temporary table HTE_person(rn_ integer not null, created_at timestamp(6) with time zone, id bigint, hua_id varchar(30), first_name varchar(150), last_name varchar(150), email varchar(255), password_hash varchar(255), phone varchar(255), type enum ('LITERATURE','STUDENT'), primary key (rn_)) TRANSACTIONAL [42101-232]

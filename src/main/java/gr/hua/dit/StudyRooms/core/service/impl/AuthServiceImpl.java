@@ -7,6 +7,7 @@ import gr.hua.dit.StudyRooms.core.repository.PersonRepository;
 import gr.hua.dit.StudyRooms.core.service.AuthService;
 import gr.hua.dit.StudyRooms.core.service.model.LogInRequest;
 import gr.hua.dit.StudyRooms.core.service.model.LoginResult;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
@@ -38,4 +39,11 @@ public class AuthServiceImpl implements AuthService {
                 })
                 .orElse(LoginResult.failed("User not found"));
     }
+
+    public void createPerson(Person person) {
+        //Κωδικοποίηση password πριν αποθήκευση
+        person.setPasswordHash(passwordEncoder.encode(person.getPasswordHash()));
+        personRepository.save(person);
+    }
+
 }

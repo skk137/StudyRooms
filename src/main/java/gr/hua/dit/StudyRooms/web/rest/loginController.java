@@ -20,6 +20,12 @@ public class LoginController {
 
     private final AuthService authService;
 
+    public LoginController(AuthService authService) {
+        this.authService = authService;
+    }
+
+
+
     @GetMapping("/login")
     public String showLoginForm(Model model) {
         model.addAttribute("loginRequest", new LogInRequest("", ""));
@@ -35,14 +41,17 @@ public class LoginController {
 
         LoginResult result = authService.login(loginRequest);
 
+        //Αν υπάρχει λάθος στο logIn, εμφανίζουμε errorMessage.
         if (!result.success()) {
             model.addAttribute("errorMessage", result.reason());
             return "login";
         }
 
-        Person user = result.user();
+        //Στο user έχουμε ολη την εγγραφή του χρήστη.
+        Person user = result.person();
         session.setAttribute("loggedInUser", user);
 
+        //Ώστε να τον πετάει στο κατάλληλο dashboard.
         if (user.getPersonType() == PersonType.LITERATURE) {
             return "redirect:/literature/dashboard";
         } else if (user.getPersonType() == PersonType.STUDENT) {

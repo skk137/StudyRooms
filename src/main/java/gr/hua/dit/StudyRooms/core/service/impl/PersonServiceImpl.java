@@ -4,11 +4,13 @@ package gr.hua.dit.StudyRooms.core.service.impl;
 import gr.hua.dit.StudyRooms.core.model.Person;
 import gr.hua.dit.StudyRooms.core.model.PersonType;
 import gr.hua.dit.StudyRooms.core.repository.PersonRepository;
+import gr.hua.dit.StudyRooms.core.service.AuthService;
 import gr.hua.dit.StudyRooms.core.service.Mapper.PersonMapper;
 import gr.hua.dit.StudyRooms.core.service.PersonService;
 import gr.hua.dit.StudyRooms.core.service.model.CreatePersonRequest;
 import gr.hua.dit.StudyRooms.core.service.model.CreatePersonResult;
 import gr.hua.dit.StudyRooms.core.service.model.PersonView;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,6 +20,9 @@ public final class PersonServiceImpl implements PersonService {
 
     private final PersonRepository personRepository;
     private final PersonMapper personMapper;
+
+    @Autowired
+    private AuthService authService;
 
     //Constructor
     public PersonServiceImpl(final PersonRepository personRepository, final PersonMapper personMapper) {
@@ -109,7 +114,9 @@ public final class PersonServiceImpl implements PersonService {
 
 
         // Save/Insert to DB.
-        person=this.personRepository.save(person);
+        // debug person=this.personRepository.save(person);
+
+        authService.createPerson(person);
 
         //Map person to personview.
         final PersonView personView = this.personMapper.convertPersonToPersonView(person) ; //to-do

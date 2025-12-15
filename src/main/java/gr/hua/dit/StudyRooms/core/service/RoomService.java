@@ -1,14 +1,15 @@
 package gr.hua.dit.StudyRooms.core.service;
 
 import gr.hua.dit.StudyRooms.core.model.Room;
+import gr.hua.dit.StudyRooms.core.service.model.RoomRequest;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface RoomService {
-    Room createRoom(Room room);
-    Room updateRoom(Room room);
-    void deleteRoom(Long roomId);
     List<Room> getAllRooms();
-    Optional<Room> getRoomById(Long roomId);
+    Room createRoom(RoomRequest request);
+    Room getRoomById(Long id);
+    void updateRoom(Long id, RoomRequest request);
+    void deleteRoom(Long id);
 }
