@@ -9,11 +9,13 @@ import gr.hua.dit.StudyRooms.core.repository.RoomRepository;
 import gr.hua.dit.StudyRooms.core.service.BookingService;
 import gr.hua.dit.StudyRooms.core.service.model.BookingRequest;
 import gr.hua.dit.StudyRooms.core.service.model.BookingResult;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -82,11 +84,22 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingResult cancelBooking(Long bookingId) {
-        Booking booking = bookingRepository.findById(bookingId).orElseThrow();
+        Optional<Booking> optionalBooking = bookingRepository.findById(bookingId);
+        if (optionalBooking.isEmpty()) {
+            return BookingResult.failed("Booking not found");
+        }
+
+        Booking booking = optionalBooking.get();
+
+        if (booking.isCanceled()) {
+            return BookingResult.failed("Booking is already canceled");
+        }
+
         booking.setCanceled(true);
         bookingRepository.save(booking);
         return BookingResult.success(booking);
     }
+
 
     @Override
     public List<Booking> getBookingsForStudent(Long studentId) {
@@ -99,5 +112,11 @@ public class BookingServiceImpl implements BookingService {
         Room room = roomRepository.findById(roomId).orElseThrow();
         return bookingRepository.findByRoomAndDate(room, date);
     }
+
+    @Override
+    public List<Booking> getAllBookings() {
+        return bookingRepository.findAll(); //Επιστρέφει όλες τις κρατήσεις
+    }
+
 }
 

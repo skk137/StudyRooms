@@ -1,10 +1,7 @@
 package gr.hua.dit.StudyRooms.core.model;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -12,8 +9,10 @@ import java.time.LocalTime;
 @Entity
 public class Booking {
 
+
+    //@GeneratedValue
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne

@@ -24,15 +24,11 @@ public class LoginController {
         this.authService = authService;
     }
 
-
-
     @GetMapping("/login")
     public String showLoginForm(Model model) {
         model.addAttribute("loginRequest", new LogInRequest("", ""));
         return "login";
     }
-
-
 
     @PostMapping("/login")
     public String handleLogin(@ModelAttribute("loginRequest") LogInRequest loginRequest,

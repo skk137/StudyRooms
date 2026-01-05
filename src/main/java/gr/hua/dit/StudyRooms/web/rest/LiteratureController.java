@@ -32,6 +32,7 @@ public class LiteratureController {
         }
         model.addAttribute("rooms", roomService.getAllRooms());
         model.addAttribute("roomRequest", new RoomRequest());
+        model.addAttribute("roomId", null);
         return "literature-dashboard";
     }
 
@@ -54,12 +55,6 @@ public class LiteratureController {
         return "redirect:/literature/dashboard";
     }
 
-    @GetMapping("/rooms/delete/{id}")
-    public String deleteRoom(@PathVariable Long id) {
-        roomService.deleteRoom(id);
-        return "redirect:/literature/dashboard";
-    }
-
     @PostMapping("/rooms/delete/{id}")
     public String deleteRoomPost(@PathVariable Long id) {
         roomService.deleteRoom(id);
@@ -68,20 +63,39 @@ public class LiteratureController {
 
 
     //Edit Feature
+    @GetMapping("/literature/rooms/edit/{id}")
+    public String editRoom(
+            @PathVariable Long id,
+            Model model) {
+
+        Room room = roomService.getRoomById(id);
+
+        model.addAttribute("rooms", roomService.getAllRooms());
+        model.addAttribute("roomRequest",
+                new RoomRequest(
+                        room.getName(),
+                        room.getCapacity(),
+                        room.getOpenTime(),
+                        room.getCloseTime()
+                ));
+        model.addAttribute("roomId", id);
+
+        return "literature-dashboard";
+    }
+
     // Ενημέρωση room (Edit)
-    @PostMapping("/rooms/{id}")
+    @PostMapping("/literature/rooms/{id}")
     public String updateRoom(
             @PathVariable Long id,
             @RequestParam String name,
             @RequestParam int capacity,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime openTime,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime closeTime
-    ){
+    ) {
+        RoomRequest request = new RoomRequest(name, capacity, openTime, closeTime);
+        roomService.updateRoom(id, request);
 
-        RoomRequest roomRequest = new RoomRequest(name, capacity, openTime, closeTime);
-        roomService.updateRoom(id, roomRequest);
         return "redirect:/literature/dashboard";
-
     }
 
 }

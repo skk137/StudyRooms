@@ -4,46 +4,71 @@
     <title>Literature Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
+
 <body class="bg-light">
+
+
+<!-- Fragment Including  -->
+<div th:replace="fragments/navbar :: literatureNavbar"></div>
+
+
+
 <div class="container mt-5">
     <h2>Rooms Management</h2>
 
-    <!-- Button to New Room Form -->
-    <button class="btn btn-primary mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#newRoomForm">
+    <!-- Button to toggle form -->
+    <button class="btn btn-primary mb-3" type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#roomForm">
         New Room
     </button>
 
-    <!-- Form -->
-    <div class="collapse mb-3" id="newRoomForm">
+    <!-- CREATE / EDIT FORM -->
+    <div class="collapse mb-3"
+         id="roomForm"
+         th:classappend="${roomId} != null ? ' show' : ''">
+
         <div class="card card-body">
-            <form th:action="@{/literature/rooms}" method="post">
+
+            <form th:object="${roomRequest}"
+                  th:action="${roomId} != null ?
+                    @{/literature/rooms/{id}(id=${roomId})} :
+                    @{/literature/rooms}"
+                  method="post">
+
                 <div class="mb-3">
                     <label class="form-label">Room Name</label>
-                    <input type="text" class="form-control" name="name" required>
+                    <input type="text" class="form-control"
+                           th:field="*{name}" required>
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label">Capacity</label>
-                    <input type="number" class="form-control" name="capacity" required>
+                    <input type="number" class="form-control"
+                           th:field="*{capacity}" required>
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label">Open Time</label>
-                    <input type="time" class="form-control" name="openTime" required>
+                    <input type="time" class="form-control"
+                           th:field="*{openTime}" required>
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label">Close Time</label>
-                    <input type="time" class="form-control" name="closeTime" required>
+                    <input type="time" class="form-control"
+                           th:field="*{closeTime}" required>
                 </div>
 
-                <button type="submit" class="btn btn-success"
-                        th:text="${roomId} != null ? 'Update Room' : 'Create Room'"></button>
+                <button type="submit" class="btn btn-success w-100"
+                        th:text="${roomId} != null ? 'Update Room' : 'Create Room'">
+                </button>
+
             </form>
         </div>
     </div>
 
-    <!-- Rooms Table -->
+    <!-- ROOMS TABLE -->
     <table class="table table-striped">
         <thead>
         <tr>
@@ -54,6 +79,7 @@
             <th>Actions</th>
         </tr>
         </thead>
+
         <tbody>
         <tr th:each="room : ${rooms}">
             <td th:text="${room.name}"></td>
@@ -62,7 +88,9 @@
             <td th:text="${room.closeTime}"></td>
             <td>
                 <div class="d-flex gap-2">
-                    <a th:href="@{/rooms/edit/{id}(id=${room.id})}" class="btn btn-sm btn-warning">
+
+                    <a th:href="@{/literature/rooms/edit/{id}(id=${room.id})}"
+                       class="btn btn-sm btn-warning">
                         Edit
                     </a>
                     <form th:action="@{/rooms/delete/{id}(id=${room.id})}" method="post">
@@ -78,7 +106,6 @@
     </table>
 </div>
 
-<!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

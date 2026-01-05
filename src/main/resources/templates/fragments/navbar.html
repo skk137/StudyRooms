@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark"
+     th:fragment="literatureNavbar">
+
+    <div class="container-fluid">
+        <span class="navbar-brand">Literature Panel</span>
+
+        <div class="collapse navbar-collapse">
+            <div class="navbar-nav">
+                <a class="nav-link" th:href="@{/literature/dashboard}">
+                    Δημιουργία / Ενημέρωση Χώρων Μελέτης
+                </a>
+                <a class="nav-link" th:href="@{/literature/bookings}">
+                    Λίστα Κρατήσεων
+                </a>
+                <a class="nav-link" th:href="@{/literature/penalties}">
+                    Λίστα Penalties
+                </a>
+            </div>
+
+            <!-- Logout button -->
+            <div class="navbar-nav ms-auto">
+                <a class="btn btn-outline-light" th:href="@{/login}">
+                    Logout
+                </a>
+            </div>
+        </div>
+    </div>
+
+</nav>
+
+</body>
+</html>

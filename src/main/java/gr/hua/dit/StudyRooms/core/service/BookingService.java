@@ -14,4 +14,7 @@ public interface BookingService {
     BookingResult cancelBooking(Long bookingId);
     List<Booking> getBookingsForStudent(Long studentId);
     List<Booking> getBookingsForRoom(Long roomId, LocalDate date);
+    List<Booking> getAllBookings();
+
+
 }
