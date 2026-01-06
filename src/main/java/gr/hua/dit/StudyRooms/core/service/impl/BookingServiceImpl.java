@@ -15,7 +15,10 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -116,6 +119,42 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public List<Booking> getAllBookings() {
         return bookingRepository.findAll(); //Επιστρέφει όλες τις κρατήσεις
+    }
+
+
+    //debug
+    @Override
+    public Set<Long> getAvailableRoomIds(
+            LocalDate date,
+            LocalTime startTime,
+            LocalTime endTime
+    ) {
+
+        List<Room> allRooms = roomRepository.findAll();
+
+        // Όλες οι ενεργές κρατήσεις που επικαλύπτουν το slot
+        List<Booking> bookings =
+                bookingRepository.findActiveBookingsForTimeSlot(
+                        date, startTime, endTime
+                );
+
+        // Map: roomId -> πόσες κρατήσεις έχει
+        Map<Long, Long> bookingsPerRoom =
+                bookings.stream()
+                        .collect(Collectors.groupingBy(
+                                b -> b.getRoom().getId(),
+                                Collectors.counting()
+                        ));
+
+        // Room διαθέσιμο αν κρατήσεις < capacity
+        return allRooms.stream()
+                .filter(room -> {
+                    long currentBookings =
+                            bookingsPerRoom.getOrDefault(room.getId(), 0L);
+                    return currentBookings < room.getCapacity();
+                })
+                .map(Room::getId)
+                .collect(Collectors.toSet());
     }
 
 }

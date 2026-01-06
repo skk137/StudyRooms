@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark"
+     th:fragment="studentNavbar">
+
+    <div class="container-fluid">
+        <span class="navbar-brand">Student Panel</span>
+
+        <div class="collapse navbar-collapse">
+            <!-- Left menu -->
+            <div class="navbar-nav">
+                <a class="nav-link" th:href="@{/student/profile}">
+                    Το Προφίλ μου
+                </a>
+
+                <a class="nav-link" th:href="@{/student/rooms}">
+                    Προβολή Διαθέσιμων Δωματίων
+                </a>
+
+                <a class="nav-link" th:href="@{/student/bookings}">
+                    Οι Κρατήσεις μου
+                </a>
+
+                <a class="nav-link" th:href="@{/student/favorites}">
+                    Τα Αγαπημένα μου
+                </a>
+            </div>
+
+
+            <div class="navbar-nav ms-auto">
+                <a class="btn btn-outline-light" th:href="@{/logout}">
+                    Logout
+                </a>
+            </div>
+        </div>
+    </div>
+
+</nav>
+
+</body>
+</html>
+
+
+

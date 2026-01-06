@@ -7,6 +7,7 @@ import gr.hua.dit.StudyRooms.core.service.model.BookingResult;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Set;
 
 public interface BookingService {
 
@@ -15,6 +16,14 @@ public interface BookingService {
     List<Booking> getBookingsForStudent(Long studentId);
     List<Booking> getBookingsForRoom(Long roomId, LocalDate date);
     List<Booking> getAllBookings();
+
+
+    Set<Long> getAvailableRoomIds(
+            LocalDate date,
+            LocalTime startTime,
+            LocalTime endTime
+    );
+
 
 
 }
