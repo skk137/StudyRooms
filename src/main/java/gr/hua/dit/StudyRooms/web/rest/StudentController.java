@@ -3,15 +3,13 @@ package gr.hua.dit.StudyRooms.web.rest;
 import gr.hua.dit.StudyRooms.core.model.Person;
 import gr.hua.dit.StudyRooms.core.model.PersonType;
 import gr.hua.dit.StudyRooms.core.model.Room;
+import gr.hua.dit.StudyRooms.core.repository.PersonRepository;
 import gr.hua.dit.StudyRooms.core.service.BookingService;
 import gr.hua.dit.StudyRooms.core.service.FavoriteService;
 import gr.hua.dit.StudyRooms.core.service.RoomService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.SessionAttribute;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -26,13 +24,15 @@ public class StudentController {
     private final RoomService roomService;
     private final FavoriteService favoriteService;
     private final BookingService bookingService;
+    private final PersonRepository personRepository;
 
     public StudentController(RoomService roomService,
                              FavoriteService favoriteService,
-                             BookingService bookingService) {
+                             BookingService bookingService, PersonRepository personRepository) {
         this.roomService = roomService;
         this.favoriteService = favoriteService;
         this.bookingService = bookingService;
+        this.personRepository = personRepository;
     }
 
     @GetMapping("/dashboard")
@@ -101,5 +101,87 @@ public class StudentController {
         return "student-favorites";
     }
 
+    @GetMapping("/profile")
+    public String profile(
+            @SessionAttribute("loggedInUser") Person user,
+            Model model
+    ){
+
+        //Security
+        if (user.getPersonType() != PersonType.STUDENT) {
+            return "redirect:/login";
+        }
+
+        model.addAttribute("student", user);
+        model.addAttribute("editMode", false);
+
+        return "student-profile";
+    }
+
+
+
+    @GetMapping("/profile/edit")
+    public String editProfile(
+            @SessionAttribute("loggedInUser") Person user,
+            Model model
+    ){
+
+        if (user.getPersonType() != PersonType.STUDENT) {
+            return "redirect:/login";
+        }
+
+        model.addAttribute("student", user);
+        model.addAttribute("editMode", true);
+
+        return "student-profile";
+    }
+
+    @PostMapping("/profile/edit")
+    public String updateProfile(
+            @SessionAttribute("loggedInUser") Person user,
+            @RequestParam String firstName,
+            @RequestParam String lastName,
+            @RequestParam String email,
+            @RequestParam String phone,
+            Model model
+    ){
+
+        if (user.getPersonType() != PersonType.STUDENT) {
+            return "redirect:/login";
+        }
+
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        user.setEmail(email);
+        user.setPhone(phone);
+
+        personRepository.save(user);
+
+        model.addAttribute("student", user);
+        model.addAttribute("editMode", false);
+        model.addAttribute("successMessage", "Τα στοιχεία σάς ενημερώθηκαν!!!");
+
+        //return "redirect:/student/profile";
+        return "student-profile";
+    }
+
+
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
