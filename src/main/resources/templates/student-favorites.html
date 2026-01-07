@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Αγαπημένα Δωμάτια</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+
+
+<!-- Student Navbar -->
+<div th:replace="fragments/navbar-student :: studentNavbar"></div>
+
+
+<div class="container mt-4">
+
+    <h2 class="mb-3">Τα Αγαπημένα Μου Δωμάτια</h2>
+
+    <!-- Επιλογή Ημερομηνίας & Ώρας -->
+    <form method="get" th:action="@{/student/favorites}" class="row g-3 mb-4">
+
+        <div class="col-md-3">
+            <label class="form-label">Ημερομηνία</label>
+            <input type="date" class="form-control" name="date" th:value="${date}" required>
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label">Από</label>
+            <input type="time" class="form-control" name="startTime" th:value="${startTime}" required>
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label">Έως</label>
+            <input type="time" class="form-control" name="endTime" th:value="${endTime}" required>
+        </div>
+
+        <div class="col-md-3 d-flex align-items-end">
+            <button class="btn btn-primary w-100">Έλεγχος Διαθεσιμότητας</button>
+        </div>
+
+    </form>
+
+    <!-- Αγαπημένα Δωμάτια -->
+    <div class="row">
+        <div class="col-md-4 mb-4" th:each="room : ${favoriteRooms}">
+
+            <div class="card shadow-sm h-100">
+                <div class="card-body d-flex flex-column">
+
+                    <h5 class="card-title" th:text="${room.name}"></h5>
+
+                    <p class="card-text">
+                        <strong>Χωρητικότητα:</strong>
+                        <span th:text="${room.capacity}"></span><br>
+
+                        <strong>Ώρες:</strong>
+                        <span th:text="${room.openTime}"></span>
+                        -
+                        <span th:text="${room.closeTime}"></span>
+                    </p>
+
+                    <div class="mt-auto d-flex justify-content-between align-items-center">
+
+                        <!-- Κράτηση -->
+                        <form th:action="@{/student/bookings/create/{id}(id=${room.id})}" method="post">
+                            <input type="hidden" name="date" th:value="${date}">
+                            <input type="hidden" name="startTime" th:value="${startTime}">
+                            <input type="hidden" name="endTime" th:value="${endTime}">
+
+                            <button class="btn btn-primary btn-sm"
+                                    th:disabled="${!availableRoomIds.contains(room.id)}">
+                                Κράτηση
+                            </button>
+                        </form>
+
+                        <!-- Αφαίρεση από αγαπημένα -->
+                        <form th:action="@{/student/favorites/toggle/{id}(id=${room.id})}" method="post">
+                            <button class="btn btn-sm btn-danger"
+                                    onclick="return confirm('Αφαίρεση από τα αγαπημένα;')">
+                                ❤
+                            </button>
+                        </form>
+
+                    </div>
+
+                    <!-- Διαθεσιμότητα -->
+                    <div class="mt-2">
+                        <span class="badge bg-success"
+                              th:if="${availableRoomIds.contains(room.id)}">
+                            Διαθέσιμο
+                        </span>
+
+                        <span class="badge bg-secondary"
+                              th:if="${!availableRoomIds.contains(room.id)}">
+                            Μη διαθέσιμο
+                        </span>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+
+
+
+
+

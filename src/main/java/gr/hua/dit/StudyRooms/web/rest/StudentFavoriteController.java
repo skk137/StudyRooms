@@ -25,7 +25,7 @@ public class StudentFavoriteController {
                                  @SessionAttribute("loggedInUser") Person student) {
 
         favoriteService.toggleFavorite(student, roomId);
-        return "redirect:/student/rooms";
+        return "redirect:/student/dashboard";
     }
 
 }

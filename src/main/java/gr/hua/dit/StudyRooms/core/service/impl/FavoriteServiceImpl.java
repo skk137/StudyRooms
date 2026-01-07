@@ -10,6 +10,8 @@ import gr.hua.dit.StudyRooms.core.service.FavoriteService;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -49,6 +51,17 @@ public class FavoriteServiceImpl implements FavoriteService {
                 .map(f -> f.getRoom().getId())
                 .collect(Collectors.toSet());
     }
+
+    @Override
+    public List<Room> getFavoriteRooms(Person student) {
+
+        return favoriteRepository.findAllByStudent(student)
+                .stream()
+                .map(Favorite::getRoom)
+                .toList();
+    }
+
+
 
 }
 
