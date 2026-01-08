@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Τα Penalties Μου</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+
+
+<!-- Student Navbar -->
+<div th:replace="fragments/navbar-student :: studentNavbar"></div>
+
+
+
+<div class="container mt-4">
+    <h2 class="mb-4">Τα Penalties Μου</h2>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <table class="table table-hover align-middle">
+                <thead class="table-dark">
+                <tr>
+                    <th>Έναρξη</th>
+                    <th>Λήξη</th>
+                    <th>Μέρες που απομένουν</th>
+                    <th>Κατάσταση</th>
+                </tr>
+                </thead>
+
+                <tbody>
+
+                <tr th:each="penalty : ${penalties}">
+
+
+                    <td th:text="${penalty.startDate}"></td>
+
+                    <td th:text="${penalty.endDate}"></td>
+
+                    <!-- Remaining days -->
+                    <td>
+                        <span
+                             th:if="${penalty.endDate.isAfter(today) and !penalty.isCanceled()}"
+                             th:text="${T(java.time.temporal.ChronoUnit).DAYS.between(today, penalty.endDate)}">
+                        </span>
+
+                        <span th:if="${!penalty.endDate.isAfter(today)}">
+                            0
+                        </span>
+
+                        <span class="badge bg-success"
+                              th:if="${penalty.isCanceled()}">
+                            0
+                        </span>
+                    </td>
+
+                    <!-- Status -->
+                    <td>
+                        <span class="badge bg-danger"
+                              th:if="${penalty.endDate.isAfter(today) and !penalty.isCanceled()}">
+                            Ενεργό
+                        </span>
+
+                        <span class="badge bg-success"
+                              th:if="${!penalty.endDate.isAfter(today)}">
+                            Έληξε
+                        </span>
+
+                        <span class="badge bg-success"
+                              th:if="${penalty.isCanceled()}">
+                            Έληξε
+                        </span>
+
+                    </td>
+                </tr>
+
+                <tr th:if="${penalties.isEmpty()}">
+                    <td colspan="5" class="text-center text-muted">
+                        Δεν έχετε penalties !!!
+                    </td>
+                </tr>
+
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+
+
+
+

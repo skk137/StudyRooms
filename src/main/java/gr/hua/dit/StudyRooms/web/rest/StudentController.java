@@ -1,13 +1,11 @@
 package gr.hua.dit.StudyRooms.web.rest;
 
-import gr.hua.dit.StudyRooms.core.model.Booking;
-import gr.hua.dit.StudyRooms.core.model.Person;
-import gr.hua.dit.StudyRooms.core.model.PersonType;
-import gr.hua.dit.StudyRooms.core.model.Room;
+import gr.hua.dit.StudyRooms.core.model.*;
 import gr.hua.dit.StudyRooms.core.repository.PersonRepository;
 import gr.hua.dit.StudyRooms.core.service.BookingService;
 import gr.hua.dit.StudyRooms.core.service.FavoriteService;
 import gr.hua.dit.StudyRooms.core.service.RoomService;
+import gr.hua.dit.StudyRooms.core.service.impl.PenaltyServiceImpl;
 import gr.hua.dit.StudyRooms.core.service.model.BookingRequest;
 import gr.hua.dit.StudyRooms.core.service.model.BookingResult;
 import org.springframework.stereotype.Controller;
@@ -29,14 +27,16 @@ public class StudentController {
     private final FavoriteService favoriteService;
     private final BookingService bookingService;
     private final PersonRepository personRepository;
+    private final PenaltyServiceImpl penaltyServiceImpl;
 
     public StudentController(RoomService roomService,
                              FavoriteService favoriteService,
-                             BookingService bookingService, PersonRepository personRepository) {
+                             BookingService bookingService, PersonRepository personRepository, PenaltyServiceImpl penaltyServiceImpl) {
         this.roomService = roomService;
         this.favoriteService = favoriteService;
         this.bookingService = bookingService;
         this.personRepository = personRepository;
+        this.penaltyServiceImpl = penaltyServiceImpl;
     }
 
     @GetMapping("/dashboard")
@@ -227,7 +227,7 @@ public class StudentController {
             Room room = roomService.getRoomById(roomId);
             model.addAttribute("room", room);
             model.addAttribute("today", LocalDate.now());
-            model.addAttribute("errorMessage", "Συμπλήρωσε ημερομηνία και ώρες.");
+            //model.addAttribute("errorMessage", "Συμπλήρωσε ημερομηνία και ώρες.");
             return "student-booking-create";
         }
 
@@ -242,14 +242,15 @@ public class StudentController {
                 )
         );
 
+        //Πέρασμα του κατάλληλου error.
         if (!result.success()) {
             Room room = roomService.getRoomById(roomId);
             model.addAttribute("room", room);
-            model.addAttribute("errorMessage", "Το δωμάτιο δεν είναι διαθέσιμο για αυτό το χρονικό διάστημα.");
+            model.addAttribute("errorMessage", result.message());
             model.addAttribute("today", LocalDate.now());
             return "student-booking-create";
         }
-
+        //Επιτυχία Δημιουργείας Κράτησης
         return "redirect:/student/bookings";
     }
 
@@ -315,8 +316,39 @@ public class StudentController {
     }
 
 
+    //Προβολή Penalties (O φοιτητης δεν μπορεί να μεταβάλλει τα penalties ή να τα διαγράψει, μόνο η γραμματεία)
+    @GetMapping("/penalties")
+    public String myPenalties(
+            @SessionAttribute("loggedInUser") Person user,
+            Model model
+    ){
+
+
+        if (user.getPersonType() != PersonType.STUDENT) {
+            return "redirect:/login";
+        }
+
+        List<Penalty> penalties = penaltyServiceImpl.getPenaltiesForStudent(user);
+
+        model.addAttribute("penalties", penalties);
+        model.addAttribute("today", LocalDate.now());
+
+        return "student-penalties";
+
+    }
+
+
+
+
 
 }
+
+
+
+
+
+
+
 
 
 

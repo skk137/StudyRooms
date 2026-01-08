@@ -30,6 +30,7 @@ public class BookingServiceImpl implements BookingService {
     private final RoomRepository roomRepository;
     private final PersonRepository personRepository;
     private final PenaltyRepository penaltyRepository;
+    private final PenaltyServiceImpl penaltyServiceImpl;
     //private final HolidayService holidayService;
     //private final EmailService emailService;
 
@@ -38,46 +39,64 @@ public class BookingServiceImpl implements BookingService {
             RoomRepository roomRepository,
             PersonRepository personRepository,
             //, HolidayService holidayService,//EmailService emailService
-            PenaltyRepository penaltyRepository) {
+            PenaltyRepository penaltyRepository, PenaltyServiceImpl penaltyServiceImpl) {
         this.bookingRepository = bookingRepository;
         this.roomRepository = roomRepository;
         this.personRepository = personRepository;
         //this.holidayService = holidayService;
         //this.emailService = emailService;
         this.penaltyRepository = penaltyRepository;
+        this.penaltyServiceImpl = penaltyServiceImpl;
     }
 
     @Override
     public BookingResult bookRoom(BookingRequest request) {
 
         //to do
-
         //if (holidayService.isHoliday(date)) {
         //    return BookingResult.failed("Cannot book on holidays.");
         //}
 
-
-        //debug to be final !?
         Room room = roomRepository.findById(request.roomId()).orElseThrow();
         Person student = personRepository.findById(request.studentId()).orElseThrow();
         LocalDate date = request.date();
         LocalTime start = request.startTime();
         LocalTime end = request.endTime();
 
-// Έλεγχος για το εάν υπάρχει ήδη κράτηση στο ίδιο διάστημα
+        LocalTime open = room.getOpenTime();
+        LocalTime close = room.getCloseTime();
+
+        //Εαν ο φοιτητης έχει κάποιο ενεργό penalty, δεν μπορει να κάνει κράτηση.
+        if (penaltyServiceImpl.hasActivePenalty(student)) {
+            return BookingResult.failed(
+                    "Δεν μπορείτε να κάνετε κράτηση επειδή έχετε ενεργό penalty."
+            );
+        }
+        //Εαν βάλει ωρα τέλους κράτησης πριν την ώρα ένραξης--> σφάλμα.
+        if (!start.isBefore(end)) {
+            return BookingResult.failed("Η ώρα έναρξης, πρέπει να είναι πριν το τέλος της κράτησης.");
+        }
+
+        //Έλεγχος για το αν ειναι μεσα στα ορια του room το booking
+        if (start.isBefore(open) || end.isAfter(close)) {
+            return BookingResult.failed(
+                    "Οι ώρες κράτησης πρέπει να είναι μέσα στο εύρος ωρών που είναι ανοιχτό το δωμάτιο (" +
+                            open + " - " + close + ")"
+            );
+        }
+
+        // Έλεγχος για το εάν υπάρχει ήδη κράτηση στο ίδιο διάστημα
         boolean conflict = bookingRepository.findByRoomAndDate(room, date).stream()
                 .anyMatch(b -> !b.isCanceled() &&
                         start.isBefore(b.getEndTime()) &&
                         end.isAfter(b.getStartTime()));
 
-        if (!start.isBefore(end)) {
-            return BookingResult.failed("Invalid time range.");
-        }
-
         if (conflict) {
-            return BookingResult.failed("Time slot already booked.");
+            return BookingResult.failed("Δεν υπάρχει διαθέσιμος χώρος στο δωμάτιο για αυτή τη χρονική περίοδο.");
         }
 
+
+        //Δημιουργεία Booking
         Booking booking = new Booking();
         booking.setRoom(room);
         booking.setStudent(student);
@@ -87,6 +106,7 @@ public class BookingServiceImpl implements BookingService {
         booking.setCanceled(false);
 
         bookingRepository.save(booking);
+
 
         // αποστολή email to-do
         //emailService.sendBookingConfirmation(student.getEmail(), student.getFirstName(), booking);
