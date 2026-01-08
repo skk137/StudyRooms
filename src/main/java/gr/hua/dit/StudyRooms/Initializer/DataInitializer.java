@@ -50,17 +50,20 @@ public class DataInitializer implements CommandLineRunner {
 
         // --- Δημιουργία bookings ---
         Booking booking1 = new Booking(null, room1, student1,
-                LocalDate.now(), LocalTime.of(10,0), LocalTime.of(12,0), false);
+                LocalDate.now(), LocalTime.of(10,0), LocalTime.of(12,0), false,false);
 
         Booking booking2 = new Booking(null, room2, student2,
-                LocalDate.now().plusDays(1), LocalTime.of(14,0), LocalTime.of(16,0), false);
+                LocalDate.now().plusDays(1), LocalTime.of(14,0), LocalTime.of(16,0), false,false);
 
         bookingRepository.save(booking1);
         bookingRepository.save(booking2);
 
         // --- Δημιουργία penalties ---
-        Penalty penalty1 = new Penalty(null, student1, 4, false);
-        Penalty penalty2 = new Penalty(null, student2, 2, false);
+        Penalty penalty1 = new Penalty(null, student1, 4, false,LocalDate.of(2026, 1, 10),
+                LocalDate.of(2026, 1, 17));
+
+        Penalty penalty2 = new Penalty(null, student2, 2, false,LocalDate.of(2026, 1, 10),
+                LocalDate.of(2026, 1, 17));
 
         penaltyRepository.save(penalty1);
         penaltyRepository.save(penalty2);

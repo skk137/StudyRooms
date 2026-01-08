@@ -1,9 +1,11 @@
 package gr.hua.dit.StudyRooms.core.service.impl;
 
 import gr.hua.dit.StudyRooms.core.model.Booking;
+import gr.hua.dit.StudyRooms.core.model.Penalty;
 import gr.hua.dit.StudyRooms.core.model.Person;
 import gr.hua.dit.StudyRooms.core.model.Room;
 import gr.hua.dit.StudyRooms.core.repository.BookingRepository;
+import gr.hua.dit.StudyRooms.core.repository.PenaltyRepository;
 import gr.hua.dit.StudyRooms.core.repository.PersonRepository;
 import gr.hua.dit.StudyRooms.core.repository.RoomRepository;
 import gr.hua.dit.StudyRooms.core.service.BookingService;
@@ -27,20 +29,22 @@ public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
     private final RoomRepository roomRepository;
     private final PersonRepository personRepository;
+    private final PenaltyRepository penaltyRepository;
     //private final HolidayService holidayService;
     //private final EmailService emailService;
 
     public BookingServiceImpl(
             BookingRepository bookingRepository,
             RoomRepository roomRepository,
-            PersonRepository personRepository
+            PersonRepository personRepository,
             //, HolidayService holidayService,//EmailService emailService
-            ) {
+            PenaltyRepository penaltyRepository) {
         this.bookingRepository = bookingRepository;
         this.roomRepository = roomRepository;
         this.personRepository = personRepository;
         //this.holidayService = holidayService;
         //this.emailService = emailService;
+        this.penaltyRepository = penaltyRepository;
     }
 
     @Override
@@ -63,7 +67,12 @@ public class BookingServiceImpl implements BookingService {
 // Έλεγχος για το εάν υπάρχει ήδη κράτηση στο ίδιο διάστημα
         boolean conflict = bookingRepository.findByRoomAndDate(room, date).stream()
                 .anyMatch(b -> !b.isCanceled() &&
-                        !(end.isBefore(b.getStartTime()) || start.isAfter(b.getEndTime())));
+                        start.isBefore(b.getEndTime()) &&
+                        end.isAfter(b.getStartTime()));
+
+        if (!start.isBefore(end)) {
+            return BookingResult.failed("Invalid time range.");
+        }
 
         if (conflict) {
             return BookingResult.failed("Time slot already booked.");
@@ -157,5 +166,69 @@ public class BookingServiceImpl implements BookingService {
                 .collect(Collectors.toSet());
     }
 
+    @Override
+    public List<Booking> getBookingsByStudent(Person student) {
+        return bookingRepository.findByStudent(student);
+    }
+
+
+
+    @Override
+    public BookingResult checkIn(Long bookingId) {
+
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found"));
+
+        // Ακυρωμένη
+        if (booking.isCanceled()) {
+            return BookingResult.failed("Η κράτηση έχει ακυρωθεί");
+        }
+
+        // Ηδη checked in
+        if (booking.isCheckedin()) {
+            return BookingResult.failed("Έχει ήδη γίνει check-in");
+        }
+
+        LocalDate today = LocalDate.now();
+        LocalTime now = LocalTime.now();
+
+        // Πέρασε το time window άρα δημιουργεία PENALTY
+        if (today.isEqual(booking.getDate())
+                && now.isAfter(booking.getEndTime())) {
+
+            createPenalty(booking.getStudent());
+
+            return BookingResult.failed("Η κράτηση χάθηκε συνεπώς δημιουργήθηκε ποινή 1 εβδομάδας");
+        }
+
+        //επιτυχές check-in
+        booking.setCheckedin(true);
+        bookingRepository.save(booking);
+
+        return BookingResult.success(booking);
+    }
+
+    private void createPenalty(Person student) {
+
+        LocalDate start = LocalDate.now();
+        LocalDate end = start.plusWeeks(1);
+
+        Penalty penalty = new Penalty();
+        penalty.setStudent(student);
+        penalty.setWeeks(1);
+        penalty.setStartDate(start);
+        penalty.setEndDate(end);
+        penalty.setCanceled(false);
+
+        penaltyRepository.save(penalty);
+    }
+
 }
+
+
+
+
+
+
+
 

@@ -25,6 +25,7 @@ public class Booking {
     private LocalTime startTime;
     private LocalTime endTime;
     private boolean canceled;
+    private boolean checkedin;
 
     //Empty Constructor
     public Booking() {}
@@ -32,7 +33,7 @@ public class Booking {
 
     public Booking(Long id, Room room, Person student,
                    LocalDate date, LocalTime startTime,
-                   LocalTime endTime, boolean canceled) {
+                   LocalTime endTime, boolean canceled, boolean checkedin) {
         this.id = id;
         this.room = room;
         this.student = student;
@@ -40,6 +41,16 @@ public class Booking {
         this.startTime = startTime;
         this.endTime = endTime;
         this.canceled = canceled;
+        this.checkedin = checkedin;
+    }
+
+
+    public boolean isCheckedin() {
+        return checkedin;
+    }
+
+    public void setCheckedin(boolean checkedin) {
+        this.checkedin = checkedin;
     }
 
     public boolean isCanceled() {

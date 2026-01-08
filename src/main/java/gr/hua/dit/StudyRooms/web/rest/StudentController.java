@@ -1,5 +1,6 @@
 package gr.hua.dit.StudyRooms.web.rest;
 
+import gr.hua.dit.StudyRooms.core.model.Booking;
 import gr.hua.dit.StudyRooms.core.model.Person;
 import gr.hua.dit.StudyRooms.core.model.PersonType;
 import gr.hua.dit.StudyRooms.core.model.Room;
@@ -7,9 +8,12 @@ import gr.hua.dit.StudyRooms.core.repository.PersonRepository;
 import gr.hua.dit.StudyRooms.core.service.BookingService;
 import gr.hua.dit.StudyRooms.core.service.FavoriteService;
 import gr.hua.dit.StudyRooms.core.service.RoomService;
+import gr.hua.dit.StudyRooms.core.service.model.BookingRequest;
+import gr.hua.dit.StudyRooms.core.service.model.BookingResult;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -163,6 +167,151 @@ public class StudentController {
 
         //return "redirect:/student/profile";
         return "student-profile";
+    }
+
+
+
+    @GetMapping("/bookings")
+    public String studentBookings(
+            @SessionAttribute("loggedInUser") Person user,
+            Model model
+    ){
+
+        //Security
+        if (user.getPersonType() != PersonType.STUDENT) {
+            return "redirect:/login";
+        }
+
+        //Όλες οι κρατήσεις για τον φοιτητή
+        List<Booking> bookings = bookingService.getBookingsByStudent(user);
+
+        model.addAttribute("bookings", bookings);
+
+        return "student-bookings";
+    }
+
+    //CreateRoom
+    @GetMapping("/bookings/create/{roomId}")
+    public String showCreateBookingForm(
+            @PathVariable Long roomId,
+            @SessionAttribute("loggedInUser") Person student,
+            Model model
+    ) {
+        if (student.getPersonType() != PersonType.STUDENT) {
+            return "redirect:/login";
+        }
+
+        Room room = roomService.getRoomById(roomId);
+
+        model.addAttribute("room", room);
+        model.addAttribute("today", LocalDate.now());
+
+        return "student-booking-create";
+    }
+
+
+    @PostMapping("/bookings/create/{roomId}")
+    public String createBooking(
+            @PathVariable Long roomId,
+            @SessionAttribute("loggedInUser") Person student,
+            @RequestParam(required = false) LocalDate date,
+            @RequestParam(required = false) LocalTime startTime,
+            @RequestParam(required = false) LocalTime endTime,
+            Model model
+    ) {
+        if (student.getPersonType() != PersonType.STUDENT) {
+            return "redirect:/login";
+        }
+
+        if (date == null || startTime == null || endTime == null) {
+            Room room = roomService.getRoomById(roomId);
+            model.addAttribute("room", room);
+            model.addAttribute("today", LocalDate.now());
+            model.addAttribute("errorMessage", "Συμπλήρωσε ημερομηνία και ώρες.");
+            return "student-booking-create";
+        }
+
+
+        BookingResult result = bookingService.bookRoom(
+                new BookingRequest(
+                        roomId,
+                        student.getId(),
+                        date,
+                        startTime,
+                        endTime
+                )
+        );
+
+        if (!result.success()) {
+            Room room = roomService.getRoomById(roomId);
+            model.addAttribute("room", room);
+            model.addAttribute("errorMessage", "Το δωμάτιο δεν είναι διαθέσιμο για αυτό το χρονικό διάστημα.");
+            model.addAttribute("today", LocalDate.now());
+            return "student-booking-create";
+        }
+
+        return "redirect:/student/bookings";
+    }
+
+
+
+
+    @PostMapping("/bookings/cancel/{id}")
+    public String cancelBooking(
+            @PathVariable Long id,
+            @SessionAttribute("loggedInUser") Person user,
+            RedirectAttributes redirectAttributes
+    ){
+
+        if (user.getPersonType() != PersonType.STUDENT) {
+            return "redirect:/login";
+        }
+
+        BookingResult result = bookingService.cancelBooking(id);
+
+        if (result.success()) {
+            redirectAttributes.addFlashAttribute(
+                    "successMessage",
+                    "Η κράτηση ακυρώθηκε επιτυχώς"
+            );
+        } else {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    result.message()
+            );
+        }
+
+        return "redirect:/student/bookings";
+    }
+
+
+
+    @PostMapping("/bookings/checkin/{id}")
+    public String checkInBooking(
+            @PathVariable Long id,
+            @SessionAttribute("loggedInUser") Person user,
+            RedirectAttributes redirectAttributes
+    ) {
+
+        if (user.getPersonType() != PersonType.STUDENT) {
+            return "redirect:/login";
+        }
+
+        BookingResult result = bookingService.checkIn(id);
+
+        if (result.success()) {
+            redirectAttributes.addFlashAttribute(
+                    "successMessage",
+                    "Επιτυχές check-in !"
+            );
+        } else {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    result.message()
+            );
+        }
+
+        return "redirect:/student/bookings";
     }
 
 
