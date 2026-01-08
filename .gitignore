@@ -4,6 +4,13 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+
+
+LOCAL_DATA/
+.DS_Store
+**/.DS_Store
+
+
 ### STS ###
 .apt_generated
 .classpath
