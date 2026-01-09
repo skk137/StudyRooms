@@ -21,6 +21,7 @@ public interface BookingService {
     BookingResult checkIn(Long bookingId);
 
 
+
     Set<Long> getAvailableRoomIds(
             LocalDate date,
             LocalTime startTime,
@@ -28,8 +29,5 @@ public interface BookingService {
     );
 
 
-
-
-
-
+    void checkAndApplyPenalties(Person student);
 }

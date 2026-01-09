@@ -56,6 +56,7 @@ public class PenaltyServiceImpl implements PenaltyService {
         return penaltyRepository.findAllByStudent(student)
                 .stream()
                 .anyMatch(p ->
+                        !p.isCanceled() && //Εαν εχει ακυρωθεί μέσω cancel απο γραμματεία και ας έχουν μεινει μέρες λόγω ημερομηνίας, δεν θα μετραέι το Penalty θα θεωρείται ληγμένο
                         !p.getEndDate().isBefore(today)
                 );
     }
