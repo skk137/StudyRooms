@@ -16,11 +16,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 
 @Controller
-public class LoginController {
+public class loginController {
 
     private final AuthService authService;
 
-    public LoginController(AuthService authService) {
+    public loginController(AuthService authService) {
         this.authService = authService;
     }
 

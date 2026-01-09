@@ -3,13 +3,14 @@ package gr.hua.dit.StudyRooms.core.service.impl;
 import gr.hua.dit.StudyRooms.core.model.Booking;
 import gr.hua.dit.StudyRooms.core.model.Person;
 import gr.hua.dit.StudyRooms.core.model.Room;
+import gr.hua.dit.StudyRooms.core.port.EmailNotificationPort;
+import gr.hua.dit.StudyRooms.core.port.HolidayPort;
 import gr.hua.dit.StudyRooms.core.repository.BookingRepository;
 import gr.hua.dit.StudyRooms.core.repository.PersonRepository;
 import gr.hua.dit.StudyRooms.core.repository.RoomRepository;
 import gr.hua.dit.StudyRooms.core.service.BookingService;
 import gr.hua.dit.StudyRooms.core.service.model.BookingRequest;
 import gr.hua.dit.StudyRooms.core.service.model.BookingResult;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -20,53 +21,52 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-
 @Service
 public class BookingServiceImpl implements BookingService {
+
+    private static final int MAX_ACTIVE_BOOKINGS_PER_DAY = 2;
 
     private final BookingRepository bookingRepository;
     private final RoomRepository roomRepository;
     private final PersonRepository personRepository;
-    //private final HolidayService holidayService;
-    //private final EmailService emailService;
+    private final HolidayPort holidayPort;
+    private final EmailNotificationPort emailNotificationPort;
 
     public BookingServiceImpl(
             BookingRepository bookingRepository,
             RoomRepository roomRepository,
-            PersonRepository personRepository
-            //, HolidayService holidayService,//EmailService emailService
-            ) {
+            PersonRepository personRepository,
+            HolidayPort holidayPort,
+            EmailNotificationPort emailNotificationPort
+    ) {
         this.bookingRepository = bookingRepository;
         this.roomRepository = roomRepository;
         this.personRepository = personRepository;
-        //this.holidayService = holidayService;
-        //this.emailService = emailService;
+        this.holidayPort = holidayPort;
+        this.emailNotificationPort = emailNotificationPort;
     }
 
     @Override
     public BookingResult bookRoom(BookingRequest request) {
 
-        //to do
-
-        //if (holidayService.isHoliday(date)) {
-        //    return BookingResult.failed("Cannot book on holidays.");
-        //}
-
-
-        //debug to be final !?
         Room room = roomRepository.findById(request.roomId()).orElseThrow();
         Person student = personRepository.findById(request.studentId()).orElseThrow();
+
         LocalDate date = request.date();
         LocalTime start = request.startTime();
         LocalTime end = request.endTime();
 
-// Έλεγχος για το εάν υπάρχει ήδη κράτηση στο ίδιο διάστημα
+        if (holidayPort.isHoliday(date)) {
+            return BookingResult.failed("Cannot book on holidays");
+        }
+
         boolean conflict = bookingRepository.findByRoomAndDate(room, date).stream()
-                .anyMatch(b -> !b.isCanceled() &&
-                        !(end.isBefore(b.getStartTime()) || start.isAfter(b.getEndTime())));
+                .anyMatch(b -> !b.isCanceled()
+                        && start.isBefore(b.getEndTime())
+                        && end.isAfter(b.getStartTime()));
 
         if (conflict) {
-            return BookingResult.failed("Time slot already booked.");
+            return BookingResult.failed("Time slot already booked");
         }
 
         Booking booking = new Booking();
@@ -79,30 +79,33 @@ public class BookingServiceImpl implements BookingService {
 
         bookingRepository.save(booking);
 
-        // αποστολή email to-do
-        //emailService.sendBookingConfirmation(student.getEmail(), student.getFirstName(), booking);
+        emailNotificationPort.sendSms(
+                student.getPhone(),
+                "Booking confirmed for room " + room.getName()
+        );
 
         return BookingResult.success(booking);
     }
 
     @Override
     public BookingResult cancelBooking(Long bookingId) {
+
         Optional<Booking> optionalBooking = bookingRepository.findById(bookingId);
         if (optionalBooking.isEmpty()) {
             return BookingResult.failed("Booking not found");
         }
 
         Booking booking = optionalBooking.get();
-
-        if (booking.isCanceled()) {
-            return BookingResult.failed("Booking is already canceled");
-        }
-
         booking.setCanceled(true);
         bookingRepository.save(booking);
+
+        emailNotificationPort.sendSms(
+                booking.getStudent().getPhone(),
+                "Booking canceled for room " + booking.getRoom().getName()
+        );
+
         return BookingResult.success(booking);
     }
-
 
     @Override
     public List<Booking> getBookingsForStudent(Long studentId) {
@@ -118,44 +121,25 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<Booking> getAllBookings() {
-        return bookingRepository.findAll(); //Επιστρέφει όλες τις κρατήσεις
+        return bookingRepository.findAll();
     }
 
-
-    //debug
     @Override
-    public Set<Long> getAvailableRoomIds(
-            LocalDate date,
-            LocalTime startTime,
-            LocalTime endTime
-    ) {
+    public Set<Long> getAvailableRoomIds(LocalDate date, LocalTime startTime, LocalTime endTime) {
 
-        List<Room> allRooms = roomRepository.findAll();
-
-        // Όλες οι ενεργές κρατήσεις που επικαλύπτουν το slot
         List<Booking> bookings =
-                bookingRepository.findActiveBookingsForTimeSlot(
-                        date, startTime, endTime
-                );
+                bookingRepository.findActiveBookingsForTimeSlot(date, startTime, endTime);
 
-        // Map: roomId -> πόσες κρατήσεις έχει
-        Map<Long, Long> bookingsPerRoom =
-                bookings.stream()
-                        .collect(Collectors.groupingBy(
-                                b -> b.getRoom().getId(),
-                                Collectors.counting()
-                        ));
+        Map<Long, Long> bookingsPerRoom = bookings.stream()
+                .collect(Collectors.groupingBy(
+                        b -> b.getRoom().getId(),
+                        Collectors.counting()
+                ));
 
-        // Room διαθέσιμο αν κρατήσεις < capacity
-        return allRooms.stream()
-                .filter(room -> {
-                    long currentBookings =
-                            bookingsPerRoom.getOrDefault(room.getId(), 0L);
-                    return currentBookings < room.getCapacity();
-                })
+        return roomRepository.findAll().stream()
+                .filter(room ->
+                        bookingsPerRoom.getOrDefault(room.getId(), 0L) < room.getCapacity())
                 .map(Room::getId)
                 .collect(Collectors.toSet());
     }
-
 }
-
