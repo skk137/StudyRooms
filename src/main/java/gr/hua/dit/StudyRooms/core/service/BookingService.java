@@ -1,6 +1,7 @@
 package gr.hua.dit.StudyRooms.core.service;
 
 import gr.hua.dit.StudyRooms.core.model.Booking;
+import gr.hua.dit.StudyRooms.core.model.Person;
 import gr.hua.dit.StudyRooms.core.service.model.BookingRequest;
 import gr.hua.dit.StudyRooms.core.service.model.BookingResult;
 
@@ -16,6 +17,8 @@ public interface BookingService {
     List<Booking> getBookingsForStudent(Long studentId);
     List<Booking> getBookingsForRoom(Long roomId, LocalDate date);
     List<Booking> getAllBookings();
+    List<Booking> getBookingsByStudent(Person student);
+    BookingResult checkIn(Long bookingId);
 
 
     Set<Long> getAvailableRoomIds(
@@ -23,6 +26,9 @@ public interface BookingService {
             LocalTime startTime,
             LocalTime endTime
     );
+
+
+
 
 
 

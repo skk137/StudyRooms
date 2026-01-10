@@ -8,7 +8,6 @@
 <body class="bg-light">
 
 
-
 <!-- Student Navbar -->
 <div th:replace="fragments/navbar-student :: studentNavbar"></div>
 
@@ -32,37 +31,57 @@
                 </thead>
 
                 <tbody>
+
                 <tr th:each="booking : ${bookings}">
 
+                    <!-- Room -->
                     <td th:text="${booking.room.name}"></td>
 
+                    <!-- Date -->
                     <td th:text="${booking.date}"></td>
 
+                    <!-- Time -->
                     <td>
                         <span th:text="${booking.startTime}"></span>
                         -
                         <span th:text="${booking.endTime}"></span>
                     </td>
 
+                    <!-- Status -->
                     <td>
-                        <span class="badge bg-success" th:if="${booking.checkedIn}">
+
+                        <!-- Checked in -->
+                        <span class="badge bg-success"
+                              th:if="${booking.checkedin}">
                             Checked-in
                         </span>
-                        <span class="badge bg-warning text-dark" th:if="${!booking.checkedin}">
-                            No Checked-in
+
+                        <!-- Penalty -->
+                        <span class="badge bg-danger"
+                              th:if="${!booking.checkedin
+                                      and booking.date == T(java.time.LocalDate).now()
+                                      and booking.endTime < T(java.time.LocalTime).now()}">
+                            Penalty
                         </span>
 
-                        <span class="badge bg-secondary" th:if="${booking.canceled}">
-                            Ακυρωμένη
-                        </span>
-
+                        <!-- Active -->
                         <span class="badge bg-warning text-dark"
-                              th:if="${!booking.canceled}">
+                              th:if="${!booking.checkedin
+                                      and !booking.canceled
+                                      and (booking.date != T(java.time.LocalDate).now()
+                                      or booking.endTime >= T(java.time.LocalTime).now())}">
                             Ενεργή
+                        </span>
+
+                        <!-- Canceled -->
+                        <span class="badge bg-secondary"
+                              th:if="${booking.canceled}">
+                            Ακυρωμένη
                         </span>
 
                     </td>
 
+                    <!-- Actions -->
                     <td class="text-end">
 
                         <!-- Check-in -->
@@ -72,7 +91,10 @@
 
                             <button type="submit"
                                     class="btn btn-success btn-sm"
-                                    th:disabled="${booking.checkedin or booking.canceled}">
+                                    th:disabled="${booking.checkedin
+                                                  or booking.canceled
+                                                  or booking.date != T(java.time.LocalDate).now()
+                                                  or booking.endTime < T(java.time.LocalTime).now()}">
                                 ✔ Check-in
                             </button>
                         </form>
@@ -84,7 +106,8 @@
 
                             <button type="submit"
                                     class="btn btn-danger btn-sm"
-                                    th:disabled="${booking.canceled}">
+                                    th:disabled="${booking.canceled
+                                                  or booking.checkedin}">
                                 Cancel
                             </button>
                         </form>
@@ -92,7 +115,8 @@
                     </td>
                 </tr>
 
-                <tr th:if="${bookings.isEmpty()}">
+                <!-- Empty state -->
+                <tr th:if="${#lists.isEmpty(bookings)}">
                     <td colspan="5" class="text-center text-muted">
                         Δεν έχετε κρατήσεις
                     </td>
@@ -107,6 +131,3 @@
 
 </body>
 </html>
-
-
-

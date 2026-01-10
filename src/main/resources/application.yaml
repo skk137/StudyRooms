@@ -17,9 +17,3 @@ spring:
       hibernate.dialect: org.hibernate.dialect.H2Dialect
       hibernate.format_sql: true
 
-external:
-  holidays:
-    country: GR
-  noc:
-    base-url: http://localhost:8081
-    token: YOUR_TOKEN_HERE
