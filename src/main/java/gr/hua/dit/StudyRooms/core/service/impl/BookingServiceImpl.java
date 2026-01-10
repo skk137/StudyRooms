@@ -15,6 +15,7 @@ import gr.hua.dit.StudyRooms.core.service.model.BookingRequest;
 import gr.hua.dit.StudyRooms.core.service.model.BookingResult;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -97,6 +98,7 @@ public class BookingServiceImpl implements BookingService {
             return BookingResult.failed("Cannot book after room closes.");
         }
 
+<<<<<<< HEAD
         // 4) Max active bookings per day (student)
         long activeBookingsToday = bookingRepository.findByStudent(student).stream()
                 .filter(b -> !b.isCanceled())
@@ -112,12 +114,62 @@ public class BookingServiceImpl implements BookingService {
                 .anyMatch(b -> !b.isCanceled()
                         && start.isBefore(b.getEndTime())
                         && end.isAfter(b.getStartTime()));
+=======
+        //Έλεγχος για το αν είναι μέσα στα όρια του room το booking.
+        if (!isWithinRoomHours(start, end, open, close)) {
+            return BookingResult.failed(
+                    "Οι ώρες κράτησης πρέπει να είναι μέσα στο εύρος ωρών που είναι ανοιχτό το δωμάτιο (" +
+                            open + " - " + close + ")"
+            );
+        }
+
+        //Να μην μπορεί να κάνει κράτηση για πάνω απο 5 ώρες.
+        Duration duration = Duration.between(start, end);
+        if (duration.compareTo(Duration.ofHours(5)) > 0) {
+            return BookingResult.failed(
+                    "Η μέγιστη διάρκεια κράτησης είναι 5 ώρες."
+            );
+        }
+
+
+        // Έλεγχος για το εάν υπάρχει ελεύθερος χώρος στο ίδιο διάστημα.
+        long overlappingBookings = bookingRepository.findByRoomAndDate(room, date).stream()
+                .filter(b -> !b.isCanceled())
+                .filter(b ->
+                        start.isBefore(b.getEndTime()) &&
+                                end.isAfter(b.getStartTime()) &&
+                                !end.equals(b.getStartTime()) &&
+                                !start.equals(b.getEndTime())
+                )
+                .count();
+        boolean conflict = overlappingBookings >= room.getCapacity();
+>>>>>>> origin/main
 
         if (conflict) {
             return BookingResult.failed("Time slot already booked.");
         }
 
+<<<<<<< HEAD
         // 6) Save booking
+=======
+
+        //Εως 3 Κρατήσεις τη μέρα, μπορεί να κάνει ο φοιτητής.
+        long dailyBookings = bookingRepository
+                .findByStudent(student)
+                .stream()
+                .filter(b -> !b.isCanceled())
+                .filter(b -> b.getDate().equals(date))
+                .count();
+
+        if (dailyBookings >= 3) {
+            return BookingResult.failed(
+                    "Δεν μπορείται να έχετε ενεργές πάνω απο 3 κρατήσεις την ίδια ημέρα."
+            );
+        }
+
+
+        //Δημιουργεία Booking
+>>>>>>> origin/main
         Booking booking = new Booking();
         booking.setRoom(room);
         booking.setStudent(student);
@@ -141,6 +193,24 @@ public class BookingServiceImpl implements BookingService {
 
         return BookingResult.success(booking);
     }
+
+    private boolean isWithinRoomHours(
+            LocalTime start,
+            LocalTime end,
+            LocalTime open,
+            LocalTime close
+    ) {
+        //Κανονικό ωράριο
+        if (open.isBefore(close)) {
+            return !start.isBefore(open) && !end.isAfter(close);
+        }
+
+        //Overnight ωράριο (for me)
+        return (!start.isBefore(open) || !start.isAfter(close))
+                && (!end.isBefore(open) || !end.isAfter(close));
+    }
+
+
 
     @Override
     public BookingResult cancelBooking(Long bookingId) {
@@ -224,6 +294,7 @@ public class BookingServiceImpl implements BookingService {
             return BookingResult.failed("Έχει ήδη γίνει check-in");
         }
 
+<<<<<<< HEAD
         LocalDate today = LocalDate.now();
         LocalTime now = LocalTime.now();
 
@@ -233,24 +304,65 @@ public class BookingServiceImpl implements BookingService {
             return BookingResult.failed("Η κράτηση χάθηκε συνεπώς δημιουργήθηκε ποινή 1 εβδομάδας");
         }
 
+=======
+        //επιτυχές check-in
+>>>>>>> origin/main
         booking.setCheckedin(true);
         bookingRepository.save(booking);
 
         return BookingResult.success(booking);
     }
 
-    private void createPenalty(Person student) {
+    //Δημιουργία penalty
+    @Override
+    public void checkAndApplyPenalties(Person student){
 
-        LocalDate start = LocalDate.now();
-        LocalDate end = start.plusWeeks(1);
 
-        Penalty penalty = new Penalty();
-        penalty.setStudent(student);
-        penalty.setWeeks(1);
-        penalty.setStartDate(start);
-        penalty.setEndDate(end);
-        penalty.setCanceled(false);
+        LocalDate today = LocalDate.now();
+        LocalTime now = LocalTime.now();
 
-        penaltyRepository.save(penalty);
+        //Παίρνουμε όλες τις κρατήσεις του φοιτητή που δεν έχουν ακυρωθεί και δεν έχουν γίνει check-in
+        List<Booking> bookingsToCheck = bookingRepository.findByStudent(student).stream()
+                .filter(b -> !b.isCanceled())                 //δεν εχει ακυρθωθεί
+                .filter(b -> !b.isCheckedin())              // δεν εχει γίνει check-in
+                .filter(b -> {
+                    // κράτηση που έχει λήξει
+                    if (b.getDate().isBefore(today)) return true; // προηγούμενη μέρα
+                    if (b.getDate().isEqual(today) && b.getEndTime().isBefore(now)) return true; // σήμερα αλλά πέρασε η ώρα
+                    return false;
+                })
+                .collect(Collectors.toList());
+
+        //Ελέγχουμε αν υπάρχει ήδη ενεργό penalty
+        boolean hasActivePenalty = penaltyRepository.findAllByStudent(student).stream()
+                .anyMatch(p -> !p.isCanceled() && !p.getEndDate().isBefore(today));
+
+        //  Αν και μονο αν δεν υπάρχει ενεργό penalty, δημιουργούμε νέο
+        if (!hasActivePenalty && !bookingsToCheck.isEmpty()) {
+            Penalty penalty = new Penalty();
+            penalty.setStudent(student);
+            penalty.setWeeks(2);
+            penalty.setStartDate(today);
+            penalty.setEndDate(today.plusWeeks(1));
+            penalty.setCanceled(false);
+            penaltyRepository.save(penalty);
+        }
+
     }
+<<<<<<< HEAD
 }
+=======
+
+
+
+
+}
+
+
+
+
+
+
+
+
+>>>>>>> origin/main

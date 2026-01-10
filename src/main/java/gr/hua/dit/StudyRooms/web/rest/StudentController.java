@@ -80,14 +80,14 @@ public class StudentController {
             @RequestParam(required = false) LocalTime startTime,
             @RequestParam(required = false) LocalTime endTime,
             Model model
-    ) {
+    ){
         if (user.getPersonType() != PersonType.STUDENT) {
             return "redirect:/login";
         }
 
-        if (date == null) date = LocalDate.now();
-        if (startTime == null) startTime = LocalTime.of(10, 0);
-        if (endTime == null) endTime = LocalTime.of(12, 0);
+        // if (date == null) date = LocalDate.now();
+        //if (startTime == null) startTime = LocalTime.of(10, 0);
+        //if (endTime == null) endTime = LocalTime.of(12, 0);
 
         List<Room> favoriteRooms = favoriteService.getFavoriteRooms(user);
         Set<Long> favoriteRoomIds = favoriteService.getFavoriteRoomIds(user);
@@ -181,6 +181,9 @@ public class StudentController {
         if (user.getPersonType() != PersonType.STUDENT) {
             return "redirect:/login";
         }
+
+        //Ελέγχουμε για penalty αυτόματα
+        bookingService.checkAndApplyPenalties(user);
 
         //Όλες οι κρατήσεις για τον φοιτητή
         List<Booking> bookings = bookingService.getBookingsByStudent(user);
