@@ -53,3 +53,7 @@ build/
 # VS Code
 ##################################
 .vscode/
+# H2 database files
+LOCAL_DATA/h2/
+*.mv.db
+*.trace.db
