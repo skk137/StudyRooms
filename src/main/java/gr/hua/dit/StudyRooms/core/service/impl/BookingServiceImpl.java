@@ -77,6 +77,12 @@ public class BookingServiceImpl implements BookingService {
             return BookingResult.failed("End time must be after start time");
         }
 
+        // Max duration 5 hours
+        Duration duration = Duration.between(start, end);
+        if (duration.compareTo(Duration.ofHours(5)) > 0) {
+            return BookingResult.failed("Η μέγιστη διάρκεια κράτησης είναι 5 ώρες.");
+        }
+
         // 1) Holiday check (GET external service)
         if (holidayPort.isHoliday(date)) {
             return BookingResult.failed("Cannot book on holidays.");
@@ -87,89 +93,39 @@ public class BookingServiceImpl implements BookingService {
             return BookingResult.failed("Δεν μπορείτε να κάνετε κράτηση επειδή έχετε ενεργό penalty.");
         }
 
-        // 3) Room hours check
+        // 3) Room hours check (supports normal and overnight ranges)
         LocalTime open = room.getOpenTime();
         LocalTime close = room.getCloseTime();
-
-        if (open != null && start.isBefore(open)) {
-            return BookingResult.failed("Cannot book before room opens.");
+        if (open != null && close != null) {
+            if (!isWithinRoomHours(start, end, open, close)) {
+                return BookingResult.failed(
+                        "Οι ώρες κράτησης πρέπει να είναι μέσα στο εύρος ωρών που είναι ανοιχτό το δωμάτιο (" +
+                                open + " - " + close + ")"
+                );
+            }
         }
-        if (close != null && end.isAfter(close)) {
-            return BookingResult.failed("Cannot book after room closes.");
-        }
 
-<<<<<<< HEAD
-        // 4) Max active bookings per day (student)
+        // 4) Max active bookings per day (student) — uses constant 2
         long activeBookingsToday = bookingRepository.findByStudent(student).stream()
                 .filter(b -> !b.isCanceled())
                 .filter(b -> date.equals(b.getDate()))
                 .count();
 
         if (activeBookingsToday >= MAX_ACTIVE_BOOKINGS_PER_DAY) {
-            return BookingResult.failed("Max active bookings per day reached.");
+            return BookingResult.failed("Δεν μπορείτε να έχετε πάνω από " + MAX_ACTIVE_BOOKINGS_PER_DAY + " ενεργές κρατήσεις την ίδια ημέρα.");
         }
 
-        // 5) Conflict check (same room/date, overlapping)
-        boolean conflict = bookingRepository.findByRoomAndDate(room, date).stream()
-                .anyMatch(b -> !b.isCanceled()
-                        && start.isBefore(b.getEndTime())
-                        && end.isAfter(b.getStartTime()));
-=======
-        //Έλεγχος για το αν είναι μέσα στα όρια του room το booking.
-        if (!isWithinRoomHours(start, end, open, close)) {
-            return BookingResult.failed(
-                    "Οι ώρες κράτησης πρέπει να είναι μέσα στο εύρος ωρών που είναι ανοιχτό το δωμάτιο (" +
-                            open + " - " + close + ")"
-            );
-        }
-
-        //Να μην μπορεί να κάνει κράτηση για πάνω απο 5 ώρες.
-        Duration duration = Duration.between(start, end);
-        if (duration.compareTo(Duration.ofHours(5)) > 0) {
-            return BookingResult.failed(
-                    "Η μέγιστη διάρκεια κράτησης είναι 5 ώρες."
-            );
-        }
-
-
-        // Έλεγχος για το εάν υπάρχει ελεύθερος χώρος στο ίδιο διάστημα.
+        // 5) Capacity-aware overlap check (same room/date, overlapping)
         long overlappingBookings = bookingRepository.findByRoomAndDate(room, date).stream()
                 .filter(b -> !b.isCanceled())
-                .filter(b ->
-                        start.isBefore(b.getEndTime()) &&
-                                end.isAfter(b.getStartTime()) &&
-                                !end.equals(b.getStartTime()) &&
-                                !start.equals(b.getEndTime())
-                )
+                .filter(b -> start.isBefore(b.getEndTime()) && end.isAfter(b.getStartTime()))
                 .count();
-        boolean conflict = overlappingBookings >= room.getCapacity();
->>>>>>> origin/main
 
-        if (conflict) {
-            return BookingResult.failed("Time slot already booked.");
+        if (overlappingBookings >= room.getCapacity()) {
+            return BookingResult.failed("Δεν υπάρχει διαθέσιμος χώρος στο δωμάτιο για αυτή τη χρονική περίοδο.");
         }
 
-<<<<<<< HEAD
         // 6) Save booking
-=======
-
-        //Εως 3 Κρατήσεις τη μέρα, μπορεί να κάνει ο φοιτητής.
-        long dailyBookings = bookingRepository
-                .findByStudent(student)
-                .stream()
-                .filter(b -> !b.isCanceled())
-                .filter(b -> b.getDate().equals(date))
-                .count();
-
-        if (dailyBookings >= 3) {
-            return BookingResult.failed(
-                    "Δεν μπορείται να έχετε ενεργές πάνω απο 3 κρατήσεις την ίδια ημέρα."
-            );
-        }
-
-
-        //Δημιουργεία Booking
->>>>>>> origin/main
         Booking booking = new Booking();
         booking.setRoom(room);
         booking.setStudent(student);
@@ -177,7 +133,7 @@ public class BookingServiceImpl implements BookingService {
         booking.setStartTime(start);
         booking.setEndTime(end);
         booking.setCanceled(false);
-        booking.setCheckedin(false); // σημαντικό για check-in
+        booking.setCheckedin(false);
 
         bookingRepository.save(booking);
 
@@ -189,28 +145,23 @@ public class BookingServiceImpl implements BookingService {
                             + " on " + date + " (" + start + "-" + end + ")"
             );
         } catch (Exception ignored) {
+            // keep booking successful even if notification fails
         }
 
         return BookingResult.success(booking);
     }
 
-    private boolean isWithinRoomHours(
-            LocalTime start,
-            LocalTime end,
-            LocalTime open,
-            LocalTime close
-    ) {
-        //Κανονικό ωράριο
+    private boolean isWithinRoomHours(LocalTime start, LocalTime end, LocalTime open, LocalTime close) {
+        // Normal hours: open < close
         if (open.isBefore(close)) {
             return !start.isBefore(open) && !end.isAfter(close);
         }
 
-        //Overnight ωράριο (for me)
-        return (!start.isBefore(open) || !start.isAfter(close))
-                && (!end.isBefore(open) || !end.isAfter(close));
+        // Overnight hours (e.g. 22:00 - 06:00)
+        boolean startOk = !start.isBefore(open) || !start.isAfter(close);
+        boolean endOk = !end.isBefore(open) || !end.isAfter(close);
+        return startOk && endOk;
     }
-
-
 
     @Override
     public BookingResult cancelBooking(Long bookingId) {
@@ -228,7 +179,6 @@ public class BookingServiceImpl implements BookingService {
         booking.setCanceled(true);
         bookingRepository.save(booking);
 
-        // Optional: send cancel sms
         try {
             emailNotificationPort.sendSms(
                     booking.getStudent().getPhone(),
@@ -248,7 +198,6 @@ public class BookingServiceImpl implements BookingService {
         return bookingRepository.findByStudent(student);
     }
 
-    // ✅ το abstract method που σου έβγαζε error
     @Override
     public List<Booking> getBookingsByStudent(Person student) {
         return bookingRepository.findByStudent(student);
@@ -294,50 +243,33 @@ public class BookingServiceImpl implements BookingService {
             return BookingResult.failed("Έχει ήδη γίνει check-in");
         }
 
-<<<<<<< HEAD
-        LocalDate today = LocalDate.now();
-        LocalTime now = LocalTime.now();
-
-        // Αν έχει περάσει το booking -> penalty
-        if (today.isEqual(booking.getDate()) && now.isAfter(booking.getEndTime())) {
-            createPenalty(booking.getStudent());
-            return BookingResult.failed("Η κράτηση χάθηκε συνεπώς δημιουργήθηκε ποινή 1 εβδομάδας");
-        }
-
-=======
-        //επιτυχές check-in
->>>>>>> origin/main
+        // Επιτυχές check-in
         booking.setCheckedin(true);
         bookingRepository.save(booking);
 
         return BookingResult.success(booking);
     }
 
-    //Δημιουργία penalty
     @Override
-    public void checkAndApplyPenalties(Person student){
-
+    public void checkAndApplyPenalties(Person student) {
 
         LocalDate today = LocalDate.now();
         LocalTime now = LocalTime.now();
 
-        //Παίρνουμε όλες τις κρατήσεις του φοιτητή που δεν έχουν ακυρωθεί και δεν έχουν γίνει check-in
+        // Bookings not canceled, not checked-in, and already ended
         List<Booking> bookingsToCheck = bookingRepository.findByStudent(student).stream()
-                .filter(b -> !b.isCanceled())                 //δεν εχει ακυρθωθεί
-                .filter(b -> !b.isCheckedin())              // δεν εχει γίνει check-in
+                .filter(b -> !b.isCanceled())
+                .filter(b -> !b.isCheckedin())
                 .filter(b -> {
-                    // κράτηση που έχει λήξει
-                    if (b.getDate().isBefore(today)) return true; // προηγούμενη μέρα
-                    if (b.getDate().isEqual(today) && b.getEndTime().isBefore(now)) return true; // σήμερα αλλά πέρασε η ώρα
-                    return false;
+                    if (b.getDate().isBefore(today)) return true;
+                    return b.getDate().isEqual(today) && b.getEndTime().isBefore(now);
                 })
                 .collect(Collectors.toList());
 
-        //Ελέγχουμε αν υπάρχει ήδη ενεργό penalty
+        // If already has active penalty, do nothing
         boolean hasActivePenalty = penaltyRepository.findAllByStudent(student).stream()
                 .anyMatch(p -> !p.isCanceled() && !p.getEndDate().isBefore(today));
 
-        //  Αν και μονο αν δεν υπάρχει ενεργό penalty, δημιουργούμε νέο
         if (!hasActivePenalty && !bookingsToCheck.isEmpty()) {
             Penalty penalty = new Penalty();
             penalty.setStudent(student);
@@ -347,22 +279,5 @@ public class BookingServiceImpl implements BookingService {
             penalty.setCanceled(false);
             penaltyRepository.save(penalty);
         }
-
     }
-<<<<<<< HEAD
 }
-=======
-
-
-
-
-}
-
-
-
-
-
-
-
-
->>>>>>> origin/main
