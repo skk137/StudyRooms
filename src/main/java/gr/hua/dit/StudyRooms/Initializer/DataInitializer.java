@@ -67,7 +67,7 @@ public class DataInitializer implements CommandLineRunner {
         bookingRepository.save(booking1);
         bookingRepository.save(booking2);
 
-        // --- Δημιουργία penalties ---
+        // --- Δημιουργία penalties (Για demo) ---
         Penalty penalty1 = new Penalty(null, student1, 2, false,LocalDate.of(2026, 1, 1),
                 LocalDate.of(2026, 1, 14));
 
