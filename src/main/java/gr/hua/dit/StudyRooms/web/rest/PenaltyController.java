@@ -1,12 +1,11 @@
 package gr.hua.dit.StudyRooms.web.rest;
 
+import gr.hua.dit.StudyRooms.core.model.Person;
+import gr.hua.dit.StudyRooms.core.model.PersonType;
 import gr.hua.dit.StudyRooms.core.service.PenaltyService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/literature/penalties")
@@ -20,7 +19,13 @@ public class PenaltyController {
 
     // Λίστα penalties
     @GetMapping
-    public String penaltiesList(Model model) {
+    public String penaltiesList(Model model, @SessionAttribute("loggedInUser") Person user) {
+
+        //Δεύτερος έλεγχος (1ος στο LogIn Controller) τύπου person ωστε, ακόμα και αν κάποιος προσπαθήσει να έχει Direct URL access, να αποτραπεί.
+        if (user.getPersonType() != PersonType.LITERATURE) {
+            return "redirect:/login";
+        }
+
         model.addAttribute("penalties", penaltyService.getAllPenalties());
         return "literature-penalties";
     }

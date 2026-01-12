@@ -65,8 +65,14 @@ public class LiteratureController {
     //Edit Feature
     @GetMapping("/literature/rooms/edit/{id}")
     public String editRoom(
+            @SessionAttribute("loggedInUser") Person user,
             @PathVariable Long id,
             Model model) {
+
+        //Δεύτερος έλεγχος (1ος στο LogIn Controller) τύπου person ωστε, ακόμα και αν κάποιος προσπαθήσει να έχει Direct URL access, να αποτραπεί.
+        if (user.getPersonType() != PersonType.LITERATURE) {
+            return "redirect:/login";
+        }
 
         Room room = roomService.getRoomById(id);
 

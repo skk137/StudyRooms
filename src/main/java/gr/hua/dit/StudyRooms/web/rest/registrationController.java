@@ -8,8 +8,11 @@ import gr.hua.dit.StudyRooms.core.service.PersonService;
 import gr.hua.dit.StudyRooms.core.service.model.CreatePersonRequest;
 import gr.hua.dit.StudyRooms.core.service.model.CreatePersonResult;
 import gr.hua.dit.StudyRooms.core.service.model.PersonView;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,15 +29,13 @@ public class registrationController {
     //Saving in DB, through JPA Repository.
     private final PersonService personService; //debug
 
-
     public registrationController(PersonService personService, PersonService personRepository) {
         if (personService == null) throw new NullPointerException("personService is null");
         this.personService = personService;
     }
 
 
-
-    //Serves the registration form (HTML FILE)
+    //Σερβίρουμε το Registration form (HTML FILE)
     @GetMapping("/register")
     public String showRegistrationForm(final Model model) {
 
@@ -48,14 +49,22 @@ public class registrationController {
     //handles the registration form Submission (POST HTTP REQUEST)
     @PostMapping("/register")
     public String showRegistrationFormSubmission(
-            @ModelAttribute("createPersonRequest") CreatePersonRequest createPersonRequest,
-            final Model model)
+            @Valid @ModelAttribute("createPersonRequest") CreatePersonRequest createPersonRequest,
+            final BindingResult bindingResult,//BindingResult πρέπει να είναι ακριβώς απο κάτω απο το @ModelAttribute.
+            final Model model
+            )
     {
-        //Managing post
+        //Managing post     ifAuthUtils //to-do
         final CreatePersonResult createPersonResult = this.personService.createPerson(createPersonRequest); //Στέλνουμε τα δεδομέμα για να δημιουργηθεί ο χρήστης.
 
+
         if (createPersonResult.created()) {
-            return "redirect:/login"; //redirect στο login μετα το success registeration. **not ready yet**
+            return "redirect:/login"; //redirect στο login μετα το success registeration.
+        }
+
+        //Μόνο εαν υπάρχουν λάθη στη φόρμα.
+        if (bindingResult.hasErrors()) {
+            return "register";
         }
 
         model.addAttribute("createPersonRequest", createPersonRequest); //Pass the same form data, that user types before submit.

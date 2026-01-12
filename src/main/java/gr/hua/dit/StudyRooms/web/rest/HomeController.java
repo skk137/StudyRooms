@@ -19,7 +19,7 @@ public class HomeController {
     }
 
     @GetMapping("/")
-    public String home(Model model){
+    public String home(Model model){ //Δεν ελέγχουμε για PersonType καθώς, θέλουμε να το βλέπουν ακόμα και ανώνυμοι χρήστες(όλοι).
 
         List<Room> rooms = roomService.getAllRooms();
 

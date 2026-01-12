@@ -2,6 +2,7 @@ package gr.hua.dit.StudyRooms.core.model;
 
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
@@ -14,30 +15,45 @@ import java.time.Instant;
 @Table(name="person", uniqueConstraints = {}, indexes = {})
 public class Person {
 
-    // ORM ANNOTATIONS ΩΣΤΕ ΝΑ ΣΧΗΜΑΤΙΣΤΕΙ Η ΒΑΣΗ ΔΟΜΙΚΑ ΟΡΘΑ.
+    //ORM ANNOTATIONS, για τον ορθό σχηαματισμό της δομής της βάσης.
     @Id
     @GeneratedValue (strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    @Column(name = "hua_id", nullable = false, length = 30)
+    @NotBlank
+    @Column(name = "hua_id", nullable = false, length = 30, unique = true)
     private String huaId;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false, length = 15)
     private PersonType PersonType; // PERSON STUDENT OR LITERATURE
 
+    @NotBlank
+    @Size(max = 100)
     @Column(name = "first_name", nullable = false, length = 150)
     private String FirstName;
 
+    @NotBlank
+    @Size(max = 100)
     @Column(name = "last_name", nullable = false, length = 150)
     private String LastName;
 
+
+    @NotBlank
+    @Size(max = 155)
+    @jakarta.validation.constraints.Email
     @Column(name = "email", nullable = false, length = 255)
     private String Email;
 
+    @NotNull
+    @NotBlank
+    @Size(max = 25)
     @Column(name = "phone", nullable = false)
     private String Phone;
 
+    @NotNull
+    @NotBlank
+    @Size(max=255)
     @Column(name = "password_Hash", nullable = false)
     private String passwordHash;
 

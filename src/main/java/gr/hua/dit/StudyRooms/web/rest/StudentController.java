@@ -4,8 +4,10 @@ import gr.hua.dit.StudyRooms.core.model.*;
 import gr.hua.dit.StudyRooms.core.repository.PersonRepository;
 import gr.hua.dit.StudyRooms.core.service.BookingService;
 import gr.hua.dit.StudyRooms.core.service.FavoriteService;
+import gr.hua.dit.StudyRooms.core.service.PersonService;
 import gr.hua.dit.StudyRooms.core.service.RoomService;
 import gr.hua.dit.StudyRooms.core.service.impl.PenaltyServiceImpl;
+import gr.hua.dit.StudyRooms.core.service.impl.PersonServiceImpl;
 import gr.hua.dit.StudyRooms.core.service.model.BookingRequest;
 import gr.hua.dit.StudyRooms.core.service.model.BookingResult;
 import org.springframework.stereotype.Controller;
@@ -26,17 +28,18 @@ public class StudentController {
     private final RoomService roomService;
     private final FavoriteService favoriteService;
     private final BookingService bookingService;
-    private final PersonRepository personRepository;
     private final PenaltyServiceImpl penaltyServiceImpl;
+    private final PersonService personService;
 
+    //Constructor
     public StudentController(RoomService roomService,
                              FavoriteService favoriteService,
-                             BookingService bookingService, PersonRepository personRepository, PenaltyServiceImpl penaltyServiceImpl) {
+                             BookingService bookingService, PenaltyServiceImpl penaltyServiceImpl,PersonService personService) {
         this.roomService = roomService;
         this.favoriteService = favoriteService;
         this.bookingService = bookingService;
-        this.personRepository = personRepository;
         this.penaltyServiceImpl = penaltyServiceImpl;
+        this.personService = personService;
     }
 
     @GetMapping("/dashboard")
@@ -154,12 +157,14 @@ public class StudentController {
             return "redirect:/login";
         }
 
-        user.setFirstName(firstName);
-        user.setLastName(lastName);
-        user.setEmail(email);
-        user.setPhone(phone);
 
-        personRepository.save(user);
+        personService.updateStudentProfile(
+                user,
+                firstName,
+                lastName,
+                email,
+                phone
+        );
 
         model.addAttribute("student", user);
         model.addAttribute("editMode", false);

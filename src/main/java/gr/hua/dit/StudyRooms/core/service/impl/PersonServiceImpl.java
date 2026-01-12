@@ -10,14 +10,21 @@ import gr.hua.dit.StudyRooms.core.service.PersonService;
 import gr.hua.dit.StudyRooms.core.service.model.CreatePersonRequest;
 import gr.hua.dit.StudyRooms.core.service.model.CreatePersonResult;
 import gr.hua.dit.StudyRooms.core.service.model.PersonView;
+import jakarta.validation.Constraint;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 public final class PersonServiceImpl implements PersonService {
 
+
+    private final Validator validator;
     private final PersonRepository personRepository;
     private final PersonMapper personMapper;
 
@@ -25,14 +32,18 @@ public final class PersonServiceImpl implements PersonService {
     private AuthService authService;
 
     //Constructor
-    public PersonServiceImpl(final PersonRepository personRepository, final PersonMapper personMapper) {
+    public PersonServiceImpl(final Validator validator,final PersonRepository personRepository, final PersonMapper personMapper) {
+
+
         if (personRepository == null) throw new NullPointerException("personRepository is null");
         if (personMapper == null) throw new NullPointerException("personMapper is null");
+        if (validator == null) throw new NullPointerException("validator is null");
 
+        this.validator = validator;
         this.personRepository = personRepository;
         this.personMapper = personMapper;
-    }
 
+    }
 
     @Override
     public List<PersonView> getPeople() {
@@ -42,7 +53,24 @@ public final class PersonServiceImpl implements PersonService {
 
     @Override
     public CreatePersonResult createPerson(CreatePersonRequest createPersonRequest) {
+
         if (createPersonRequest==null) throw new NullPointerException("createPersonRequest==null");
+
+        //CreatePersonRequest Validation με βάση τα validation annotations, στην Person.
+        final Set<ConstraintViolation<CreatePersonRequest>> requestViolations =
+                this.validator.validate(createPersonRequest);
+        if (!requestViolations.isEmpty()) {
+            final StringBuilder sb = new StringBuilder();
+            for (final ConstraintViolation<CreatePersonRequest> violation : requestViolations ) {
+                sb
+                        .append(violation.getPropertyPath())
+                        .append(": ")
+                        .append(violation.getMessage())
+                        .append("\n");
+
+            }
+            return CreatePersonResult.fail(sb.toString());
+        }
 
         final PersonType type = createPersonRequest.PersonType();
         final String huaId = createPersonRequest.huaId().strip(); //removing whitespaces
@@ -59,48 +87,13 @@ public final class PersonServiceImpl implements PersonService {
             //throw new IllegalArgumentException("Μόνο emails με @hua.gr επιτρέπονται");
         }
 
-
-        // Advanced mobile phone number validation.
-        // --------------------------------------------------
-/*
-        final PhoneNumberValidationResult phoneNumberValidationResult
-                = this.phoneNumberPort.validate(mobilePhoneNumber);
-        if (!phoneNumberValidationResult.isValidMobile()) {
-            return CreatePersonResult.fail("Mobile Phone Number is not valid");
-        }
-        mobilePhoneNumber = phoneNumberValidationResult.e164();
-
-        // --------------------------------------------------
-
-        if (this.personRepository.existsByHuaIdIgnoreCase(huaId)) {
-            return CreatePersonResult.fail("HUA ID already registered");
+        //HuaId Validation.
+        if (personRepository.existsByHuaId(huaId)) {
+            return CreatePersonResult.fail("Το HUA ID χρησιμοποιείται ήδη");
         }
 
-        if (this.personRepository.existsByEmailAddressIgnoreCase(emailAddress)) {
-            return CreatePersonResult.fail("Email Address already registered");
-        }
 
-        if (this.personRepository.existsByMobilePhoneNumber(mobilePhoneNumber)) {
-            return CreatePersonResult.fail("Mobile Phone Number already registered");
-        }
-
-        // --------------------------------------------------
-
-        final PersonType personType_lookup = this.lookupPort.lookup(huaId).orElse(null);
-        if (personType_lookup == null) {
-            return CreatePersonResult.fail("Invalid HUA ID");
-        }
-        if (personType_lookup != type) {
-            return CreatePersonResult.fail("The provided person type does not match the actual one");
-        }
-
-        // --------------------------------------------------
-*/
-//      final String hashedPassword = this.passwordEncoder.encode(rawPassword);
-
-
-        // Instantiate person.
-
+        //Instantiate person.
         Person person = new Person();
         person.setId(null); // auto generated
         person.setHuaId(huaId);
@@ -112,21 +105,37 @@ public final class PersonServiceImpl implements PersonService {
         person.setPasswordHash(passwordHash);
         person.setCreatedAt(null); // auto-generated με @CreationTimestamp
 
+        // ---------------------------------------------------------------------
+        final Set<ConstraintViolation<Person>> personViolations = this.validator.validate(person);
+        if (!personViolations.isEmpty()){
+            return CreatePersonResult.fail("Validation error");
+        }
 
-        // Save/Insert to DB.
-        // debug person=this.personRepository.save(person);
 
         authService.createPerson(person);
 
         //Map person to personview.
-        final PersonView personView = this.personMapper.convertPersonToPersonView(person) ; //to-do
-
-
-
-
-
-
+        final PersonView personView = this.personMapper.convertPersonToPersonView(person) ;
 
         return CreatePersonResult.success(personView);
     }
+
+    @Override
+    public void updateStudentProfile(
+            Person student,
+            String firstName,
+            String lastName,
+            String email,
+            String phone
+    ){
+        student.setFirstName(firstName);
+        student.setLastName(lastName);
+        student.setEmail(email);
+        student.setPhone(phone);
+
+        personRepository.save(student);
+    }
+
 }
+
+
