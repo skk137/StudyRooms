@@ -10,10 +10,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.Instant;
 
+//Controller για Δοκιμές!!!!!!
 @RestController
 public class TestController {
-
-
 
     private final PersonRepository personRepository;
 
@@ -21,30 +20,24 @@ public class TestController {
         this.personRepository = personRepository;
     }
 
-
     /**
-     * Rest EndPoint for testing.
+     * Controller for <strong> testing </strong>.
      */
-    @GetMapping(value = "test", produces = MediaType.TEXT_PLAIN_VALUE)
+    @GetMapping(value = "test/error/404", produces = MediaType.TEXT_PLAIN_VALUE)
     public String test() {
-        Person person = new Person();
-        person.setId(null); //auto gen
-        person.setHuaId("it2022095");
-        person.setPersonType(PersonType.LITERATURE);
-        person.setFirstName("John");
-        person.setLastName("Doe");
-        person.setEmail("skk");
-        person.setPhone("6989159045");
-        person.setPasswordHash("137");
-        person.setCreatedAt(Instant.now()); //just now
-
-        person = this.personRepository.save(person);
-
-
-        return person.toString();
+        return "error/404";
     }
 
+    @GetMapping(value = "test/error/error")
+    public String testError(){
+        return "error/error";
+    }
 
-
-
+    @GetMapping(value = "/test/error/NullPointerException")
+    public String testNullPointerException(){
+        final Integer a=null;
+        final int b=0;
+        final int c=a+b; //throws NullPointerException
+        return "error/NullPointerException";
+    }
 }
