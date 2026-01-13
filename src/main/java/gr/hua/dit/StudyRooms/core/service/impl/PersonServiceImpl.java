@@ -11,6 +11,7 @@ import gr.hua.dit.StudyRooms.core.service.model.CreatePersonRequest;
 import gr.hua.dit.StudyRooms.core.service.model.CreatePersonResult;
 import gr.hua.dit.StudyRooms.core.service.model.PersonView;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.List;
 @Service
 public final class PersonServiceImpl implements PersonService {
 
+    private final PasswordEncoder passwordEncoder;
     private final PersonRepository personRepository;
     private final PersonMapper personMapper;
 
@@ -25,10 +27,14 @@ public final class PersonServiceImpl implements PersonService {
     private AuthService authService;
 
     //Constructor
-    public PersonServiceImpl(final PersonRepository personRepository, final PersonMapper personMapper) {
+    public PersonServiceImpl(final PasswordEncoder passwordEncoder,
+                             PersonRepository personRepository,
+                             final PersonMapper personMapper) {
+        if (passwordEncoder == null) throw new NullPointerException("passwordEncodes is null");
         if (personRepository == null) throw new NullPointerException("personRepository is null");
         if (personMapper == null) throw new NullPointerException("personMapper is null");
 
+        this.passwordEncoder = passwordEncoder;
         this.personRepository = personRepository;
         this.personMapper = personMapper;
     }
@@ -53,6 +59,7 @@ public final class PersonServiceImpl implements PersonService {
         final String passwordHash = createPersonRequest.passwordHash().strip();
 
 
+
         // Email address validation.
         if (!email.toLowerCase().endsWith("@hua.gr")) {
             return CreatePersonResult.fail("Μόνο emails με @hua.gr επιτρέπονται");
@@ -60,43 +67,12 @@ public final class PersonServiceImpl implements PersonService {
         }
 
 
-        // Advanced mobile phone number validation.
-        // --------------------------------------------------
-/*
-        final PhoneNumberValidationResult phoneNumberValidationResult
-                = this.phoneNumberPort.validate(mobilePhoneNumber);
-        if (!phoneNumberValidationResult.isValidMobile()) {
-            return CreatePersonResult.fail("Mobile Phone Number is not valid");
-        }
-        mobilePhoneNumber = phoneNumberValidationResult.e164();
-
-        // --------------------------------------------------
-
         if (this.personRepository.existsByHuaIdIgnoreCase(huaId)) {
             return CreatePersonResult.fail("HUA ID already registered");
         }
 
-        if (this.personRepository.existsByEmailAddressIgnoreCase(emailAddress)) {
-            return CreatePersonResult.fail("Email Address already registered");
-        }
 
-        if (this.personRepository.existsByMobilePhoneNumber(mobilePhoneNumber)) {
-            return CreatePersonResult.fail("Mobile Phone Number already registered");
-        }
-
-        // --------------------------------------------------
-
-        final PersonType personType_lookup = this.lookupPort.lookup(huaId).orElse(null);
-        if (personType_lookup == null) {
-            return CreatePersonResult.fail("Invalid HUA ID");
-        }
-        if (personType_lookup != type) {
-            return CreatePersonResult.fail("The provided person type does not match the actual one");
-        }
-
-        // --------------------------------------------------
-*/
-//      final String hashedPassword = this.passwordEncoder.encode(rawPassword);
+        final String hashedPassword = this.passwordEncoder.encode(passwordHash);
 
 
         // Instantiate person.
@@ -109,7 +85,7 @@ public final class PersonServiceImpl implements PersonService {
         person.setLastName(lastName);
         person.setEmail(email);
         person.setPhone(phone);
-        person.setPasswordHash(passwordHash);
+        person.setPasswordHash(hashedPassword);
         person.setCreatedAt(null); // auto-generated με @CreationTimestamp
 
 

@@ -1,8 +1,10 @@
-package gr.hua.dit.StudyRooms.web.rest;
+package gr.hua.dit.StudyRooms.web.ui;
 
 import gr.hua.dit.StudyRooms.core.model.Person;
 import gr.hua.dit.StudyRooms.core.model.PersonType;
 import gr.hua.dit.StudyRooms.core.model.Room;
+import gr.hua.dit.StudyRooms.core.repository.PersonRepository;
+import gr.hua.dit.StudyRooms.core.security.CurrentUserProvider;
 import gr.hua.dit.StudyRooms.core.service.RoomService;
 import gr.hua.dit.StudyRooms.core.service.model.RoomRequest;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -17,24 +19,34 @@ import java.time.LocalTime;
 public class LiteratureController {
 
     private final RoomService roomService;
+    private final CurrentUserProvider currentUserProvider;
+    private final PersonRepository personRepository;
     //Constructor
-    public LiteratureController(RoomService roomService) {
+    public LiteratureController(RoomService roomService,
+                                CurrentUserProvider currentUserProvider,
+                                PersonRepository personRepository) {
         this.roomService = roomService;
+        this.currentUserProvider = currentUserProvider;
+        this.personRepository = personRepository;
     }
 
+    private Person requireLiterature() {
+        var me = currentUserProvider.getCurrentUser().orElseThrow();
+        return personRepository.findById(me.id()).orElseThrow();
+    }
+
+
     @GetMapping("/literature/dashboard")
-    public String dashboardLiterature(@SessionAttribute("loggedInUser") Person user, Model model) {
+    public String dashboardLiterature(Model model) {
 
+        Person user = requireLiterature();
 
-        //Δεύτερος έλεγχος (1ος στο LogIn Controller) τύπου person ωστε, ακόμα και αν κάποιος προσπαθήσει να έχει Direct URL access, να αποτραπεί.
-        if (user.getPersonType() != PersonType.LITERATURE) {
-            return "redirect:/login";
-        }
         model.addAttribute("rooms", roomService.getAllRooms());
         model.addAttribute("roomRequest", new RoomRequest());
         model.addAttribute("roomId", null);
         return "literature-dashboard";
     }
+
 
 
 //    @GetMapping("/rooms/new")
@@ -50,13 +62,15 @@ public class LiteratureController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime openTime,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime closeTime
     ) {
+        Person user = requireLiterature();
         RoomRequest roomRequest = new RoomRequest(name, capacity, openTime, closeTime);
         roomService.createRoom(roomRequest);
         return "redirect:/literature/dashboard";
     }
 
-    @PostMapping("/rooms/delete/{id}")
+    @PostMapping("/literature/rooms/delete/{id}")
     public String deleteRoomPost(@PathVariable Long id) {
+        Person user = requireLiterature();
         roomService.deleteRoom(id);
         return "redirect:/literature/dashboard";
     }
@@ -67,6 +81,7 @@ public class LiteratureController {
     public String editRoom(
             @PathVariable Long id,
             Model model) {
+        Person user = requireLiterature();
 
         Room room = roomService.getRoomById(id);
 

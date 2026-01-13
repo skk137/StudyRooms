@@ -15,22 +15,25 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 
 
+
+
+
 @Controller
-public class LoginController {
+public class loginController {
 
     private final AuthService authService;
 
-    public LoginController(AuthService authService) {
+    public loginController(AuthService authService) {
         this.authService = authService;
     }
 
-    @GetMapping("/login")
+   //  @GetMapping("/login")
     public String showLoginForm(Model model) {
         model.addAttribute("loginRequest", new LogInRequest("", ""));
         return "login";
     }
 
-    @PostMapping("/login")
+   // @PostMapping("/login")
     public String handleLogin(@ModelAttribute("loginRequest") LogInRequest loginRequest,
                               Model model,
                               HttpSession session) {

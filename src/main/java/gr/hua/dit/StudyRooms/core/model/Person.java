@@ -19,7 +19,7 @@ public class Person {
     @GeneratedValue (strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    @Column(name = "hua_id", nullable = false, length = 30)
+    @Column(name = "hua_id", nullable = false, length = 30, unique = true)
     private String huaId;
 
     @Enumerated(EnumType.STRING)

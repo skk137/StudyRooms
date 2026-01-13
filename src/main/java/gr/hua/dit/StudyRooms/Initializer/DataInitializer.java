@@ -37,6 +37,10 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
+        if (personRepository.count() > 0) {
+            return; // ΜΗΝ ξανατρέξεις initializer
+        }
+
         // --- Δημιουργία φοιτητών ---
         Person student1 = new Person(null, "1", PersonType.STUDENT, "Γιώργος", "Παπαδάκης", "papadakis1@hua.gr", "6989159046", passwordEncoder.encode("137"), Instant.now());
         Person student2 = new Person(null, "5", PersonType.STUDENT, "Μαρία", "Κωνσταντίνου", "skkbusiness1377@hua.gr", "698915995", passwordEncoder.encode("137"), Instant.now());

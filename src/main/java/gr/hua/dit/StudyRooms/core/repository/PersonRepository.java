@@ -4,6 +4,7 @@ package gr.hua.dit.StudyRooms.core.repository;
 import gr.hua.dit.StudyRooms.core.model.Person;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -16,6 +17,12 @@ import java.util.Optional;
 public interface PersonRepository extends JpaRepository<Person, Long> {
 
     Optional<Person> findByHuaId(String huaId);
+
+
+    Optional<Person> findByHuaIdIgnoreCase(String huaId);
+
+    boolean existsByHuaIdIgnoreCase(String huaId);
+
 
 
 
