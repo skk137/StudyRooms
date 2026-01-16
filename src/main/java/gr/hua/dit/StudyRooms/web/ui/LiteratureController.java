@@ -1,4 +1,4 @@
-package gr.hua.dit.StudyRooms.web.rest;
+package gr.hua.dit.StudyRooms.web.ui;
 
 import gr.hua.dit.StudyRooms.core.model.Person;
 import gr.hua.dit.StudyRooms.core.model.PersonType;

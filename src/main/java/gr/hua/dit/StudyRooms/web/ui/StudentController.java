@@ -1,13 +1,11 @@
-package gr.hua.dit.StudyRooms.web.rest;
+package gr.hua.dit.StudyRooms.web.ui;
 
 import gr.hua.dit.StudyRooms.core.model.*;
-import gr.hua.dit.StudyRooms.core.repository.PersonRepository;
 import gr.hua.dit.StudyRooms.core.service.BookingService;
 import gr.hua.dit.StudyRooms.core.service.FavoriteService;
 import gr.hua.dit.StudyRooms.core.service.PersonService;
 import gr.hua.dit.StudyRooms.core.service.RoomService;
 import gr.hua.dit.StudyRooms.core.service.impl.PenaltyServiceImpl;
-import gr.hua.dit.StudyRooms.core.service.impl.PersonServiceImpl;
 import gr.hua.dit.StudyRooms.core.service.model.BookingRequest;
 import gr.hua.dit.StudyRooms.core.service.model.BookingResult;
 import org.springframework.stereotype.Controller;

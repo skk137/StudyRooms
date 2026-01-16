@@ -1,13 +1,10 @@
-package gr.hua.dit.StudyRooms.web;
+package gr.hua.dit.StudyRooms.web.ui;
 
 
-import gr.hua.dit.StudyRooms.core.model.Person;
-import gr.hua.dit.StudyRooms.core.model.PersonType;
 import gr.hua.dit.StudyRooms.core.repository.PersonRepository;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-import java.time.Instant;
 
 //Controller για Δοκιμές!!!!!!
 @RestController

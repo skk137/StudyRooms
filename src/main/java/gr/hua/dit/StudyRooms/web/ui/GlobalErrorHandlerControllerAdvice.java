@@ -1,4 +1,4 @@
-package gr.hua.dit.StudyRooms.web;
+package gr.hua.dit.StudyRooms.web.ui;
 
 
 //Global Error handling and custom error templates.
