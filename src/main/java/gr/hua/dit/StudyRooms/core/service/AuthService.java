@@ -4,6 +4,7 @@ import gr.hua.dit.StudyRooms.core.model.Person;
 import gr.hua.dit.StudyRooms.core.service.model.LogInRequest;
 import gr.hua.dit.StudyRooms.core.service.model.LoginResult;
 
+
 public interface AuthService {
 
 

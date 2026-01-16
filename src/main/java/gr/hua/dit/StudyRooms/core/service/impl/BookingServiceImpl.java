@@ -73,13 +73,15 @@ public class BookingServiceImpl implements BookingService {
             return BookingResult.failed("Missing date/time");
         }
 
-        if (!end.isAfter(start)) {
-            return BookingResult.failed("End time must be after start time");
+        if (!(room.getOpenTime().isAfter(room.getCloseTime()))) { //Ο επόμενος έλεγχος θα εκτελείται μόνο για δωμάτια, τα οποία δεν ειναι με overnight ωράριο.
+            if (!end.isAfter(start)) {
+                return BookingResult.failed("End time must be after start time");
+            }
         }
 
         // Max duration 5 hours
         Duration duration = Duration.between(start, end);
-        if (duration.compareTo(Duration.ofHours(5)) > 0) {
+        if (duration.compareTo(Duration.ofHours(5)) > 0){
             return BookingResult.failed("Η μέγιστη διάρκεια κράτησης είναι 5 ώρες.");
         }
 
@@ -105,7 +107,7 @@ public class BookingServiceImpl implements BookingService {
             }
         }
 
-        // 4) Max active bookings per day (student) — uses constant 2
+        // 4) Max active bookings per day (student), εδώ 3.
         long activeBookingsToday = bookingRepository.findByStudent(student).stream()
                 .filter(b -> !b.isCanceled())
                 .filter(b -> date.equals(b.getDate()))

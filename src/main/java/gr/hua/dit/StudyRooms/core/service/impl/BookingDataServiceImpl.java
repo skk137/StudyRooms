@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 /**
- * Default implementation of {@link BookingDataService}.
+ * Default implementation of {@Link BookingDataService}.
  */
 @Service
 public class BookingDataServiceImpl implements BookingDataService {

@@ -31,6 +31,13 @@ server:
       enabled: true
       force: true
 
+  error:
+    whitelabel:
+      enabled: false
+    include-message: always
+    include-binding-errors: always
+    include-exception: true
+
 
 logging:
   level:
@@ -43,15 +50,5 @@ external:
   noc:
     base-url: http://localhost:8081
     token: YOUR_TOKEN_HERE
-
-
-server:
-  error:
-    whitelabel:
-      enabled: false
-    include-message: always
-    include-binding-errors: always
-    include-exception: true
-
 
 
