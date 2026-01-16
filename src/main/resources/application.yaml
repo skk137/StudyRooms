@@ -1,3 +1,9 @@
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
 spring:
   application:
     name: StudyRooms
@@ -15,6 +21,21 @@ spring:
     properties:
       hibernate.dialect: org.hibernate.dialect.H2Dialect
       hibernate.format_sql: true
+
+
+
+server:
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.orm.jdbc.bind: trace
 
 external:
   holidays:
