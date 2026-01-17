@@ -20,29 +20,36 @@
 
                     <h3 class="text-center mb-4">Login at Study Rooms</h3>
 
-                    <!-- Error Message -->
-                    <div class="alert alert-danger"
-                         th:if="${errorMessage}"
-                         th:text="${errorMessage}">
+                    <!-- Error Message from Spring Security ( /login?error ) -->
+                    <div class="alert alert-danger text-center" th:if="${param.error}">
+                        Wrong HUA id or password
                     </div>
 
+                    <!-- Logout success ( /login?logout ) -->
+                    <div class="alert alert-success text-center" th:if="${param.logout}">
+                        You have been logged out successfully
+                    </div>
+
+                    <!-- (optional) If you still use controller errorMessage somewhere, keep this too -->
+                    <div class="alert alert-danger" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+
                     <!-- Login Form -->
-                    <form th:action="@{/login}" method="post" th:object="${loginRequest}">
+                    <form th:action="@{/login}" method="post">
 
                         <!-- Email / Username -->
                         <div class="mb-3">
                             <label class="form-label">HUA id</label>
                             <input type="text" class="form-control"
-                                   th:field="*{huaId}"
-                                   placeholder="Enter your HUA id">
+                                   name="username"
+                                   placeholder="Enter your HUA id" required>
                         </div>
 
                         <!-- Password -->
                         <div class="mb-3">
                             <label class="form-label">Password</label>
                             <input type="password" class="form-control"
-                                   th:field="*{password}"
-                                   placeholder="Enter your password">
+                                   name="password"
+                                   placeholder="Enter your password" required>
                         </div>
 
                         <button type="submit" class="btn btn-primary w-100">
@@ -51,7 +58,7 @@
                     </form>
 
                     <div class="text-center mt-3">
-                        <small>Don't have an account? <a href="/register">Register</a></small>
+                        <small>Don't have an account? <a th:href="@{/register}">Register</a></small>
                     </div>
 
                 </div>
@@ -66,3 +73,4 @@
 
 </body>
 </html>
+

@@ -19,12 +19,12 @@ public class PenaltyController {
 
     // Λίστα penalties
     @GetMapping
-    public String penaltiesList(Model model, @SessionAttribute("loggedInUser") Person user) {
+    public String penaltiesList(Model model) {
 
         //Δεύτερος έλεγχος (1ος στο LogIn Controller) τύπου person ωστε, ακόμα και αν κάποιος προσπαθήσει να έχει Direct URL access, να αποτραπεί.
-        if (user.getPersonType() != PersonType.LITERATURE) {
-            return "redirect:/login";
-        }
+       // if (user.getPersonType() != PersonType.LITERATURE) {
+        //    return "redirect:/login";
+        //}
 
         model.addAttribute("penalties", penaltyService.getAllPenalties());
         return "literature-penalties";

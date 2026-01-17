@@ -1,6 +1,8 @@
 package gr.hua.dit.StudyRooms.web.ui;
 
 import gr.hua.dit.StudyRooms.core.model.*;
+import gr.hua.dit.StudyRooms.core.security.ApplicationUserDetails;
+import gr.hua.dit.StudyRooms.core.security.CurrentUserProvider;
 import gr.hua.dit.StudyRooms.core.service.BookingService;
 import gr.hua.dit.StudyRooms.core.service.FavoriteService;
 import gr.hua.dit.StudyRooms.core.service.PersonService;
@@ -8,6 +10,7 @@ import gr.hua.dit.StudyRooms.core.service.RoomService;
 import gr.hua.dit.StudyRooms.core.service.impl.PenaltyServiceImpl;
 import gr.hua.dit.StudyRooms.core.service.model.BookingRequest;
 import gr.hua.dit.StudyRooms.core.service.model.BookingResult;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +21,6 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Set;
 
-
 @Controller
 @RequestMapping("/student")
 public class StudentController {
@@ -26,72 +28,78 @@ public class StudentController {
     private final RoomService roomService;
     private final FavoriteService favoriteService;
     private final BookingService bookingService;
-    private final PenaltyServiceImpl penaltyServiceImpl;
     private final PersonService personService;
+    private final PenaltyServiceImpl penaltyService;
+    private final CurrentUserProvider currentUserProvider;
 
-    //Constructor
     public StudentController(RoomService roomService,
                              FavoriteService favoriteService,
-                             BookingService bookingService, PenaltyServiceImpl penaltyServiceImpl,PersonService personService) {
+                             BookingService bookingService,
+                             PersonService personService,
+                             PenaltyServiceImpl penaltyService,
+                             CurrentUserProvider currentUserProvider) {
         this.roomService = roomService;
         this.favoriteService = favoriteService;
         this.bookingService = bookingService;
-        this.penaltyServiceImpl = penaltyServiceImpl;
         this.personService = personService;
+        this.penaltyService = penaltyService;
+        this.currentUserProvider = currentUserProvider;
     }
 
+    /* =========================================================
+       Helpers
+       ========================================================= */
+
+    private Person requireStudent() {
+        var me = currentUserProvider.getCurrentUser().orElseThrow();
+        return personService.findById(me.id()).orElseThrow();
+    }
+
+    /* =========================================================
+       Dashboard
+       ========================================================= */
+
     @GetMapping("/dashboard")
-    public String dashboardStudent(
-            @SessionAttribute("loggedInUser") Person user,
-            Model model
-    ) {
+    public String dashboard(Model model) {
 
-        // Security check
-        if (user.getPersonType() != PersonType.STUDENT) {
-            return "redirect:/login";
-        }
+        Person student = requireStudent();
 
-        // Default χρονικό διάστημα (προβολή)
         LocalDate date = LocalDate.now();
-        LocalTime startTime = LocalTime.now().withSecond(0).withNano(0);
-        LocalTime endTime = startTime.plusHours(1);
+        LocalTime start = LocalTime.now().withSecond(0).withNano(0);
+        LocalTime end = start.plusHours(1);
 
-        // Data
-        List<Room> rooms = roomService.getAllRooms();
-        Set<Long> favoriteRoomIds = favoriteService.getFavoriteRoomIds(user);
-        Set<Long> availableRoomIds =
-                bookingService.getAvailableRoomIds(date, startTime, endTime);
+        model.addAttribute("rooms", roomService.getAllRooms());
+        model.addAttribute("favoriteRoomIds", favoriteService.getFavoriteRoomIds(student));
+        model.addAttribute("availableRoomIds",
+                bookingService.getAvailableRoomIds(date, start, end));
 
-        // Model
-        model.addAttribute("rooms", rooms);
-        model.addAttribute("favoriteRoomIds", favoriteRoomIds);
-        model.addAttribute("availableRoomIds", availableRoomIds);
         model.addAttribute("date", date);
-        model.addAttribute("startTime", startTime);
-        model.addAttribute("endTime", endTime);
+        model.addAttribute("startTime", start);
+        model.addAttribute("endTime", end);
 
         return "student-dashboard";
     }
 
+    /* =========================================================
+       Favorites
+       ========================================================= */
 
     @GetMapping("/favorites")
-    public String favoriteRooms(
-            @SessionAttribute("loggedInUser") Person user,
+    public String favorites(
             @RequestParam(required = false) LocalDate date,
             @RequestParam(required = false) LocalTime startTime,
             @RequestParam(required = false) LocalTime endTime,
             Model model
-    ){
-        if (user.getPersonType() != PersonType.STUDENT) {
-            return "redirect:/login";
-        }
+    ) {
 
-        // if (date == null) date = LocalDate.now();
+        Person student = requireStudent();
+
+        //if (date == null) date = LocalDate.now();
         //if (startTime == null) startTime = LocalTime.of(10, 0);
         //if (endTime == null) endTime = LocalTime.of(12, 0);
 
-        List<Room> favoriteRooms = favoriteService.getFavoriteRooms(user);
-        Set<Long> favoriteRoomIds = favoriteService.getFavoriteRoomIds(user);
+        List<Room> favoriteRooms = favoriteService.getFavoriteRooms(student);
+        Set<Long> favoriteRoomIds = favoriteService.getFavoriteRoomIds(student);
         Set<Long> availableRoomIds =
                 bookingService.getAvailableRoomIds(date, startTime, endTime);
 
@@ -106,36 +114,27 @@ public class StudentController {
         return "student-favorites";
     }
 
+    /* =========================================================
+       Profile
+       ========================================================= */
+
     @GetMapping("/profile")
-    public String profile(
-            @SessionAttribute("loggedInUser") Person user,
-            Model model
-    ){
+    public String profile(Model model) {
 
-        //Security
-        if (user.getPersonType() != PersonType.STUDENT) {
-            return "redirect:/login";
-        }
+        Person student = requireStudent();
 
-        model.addAttribute("student", user);
+        model.addAttribute("student", student);
         model.addAttribute("editMode", false);
 
         return "student-profile";
     }
 
-
-
     @GetMapping("/profile/edit")
-    public String editProfile(
-            @SessionAttribute("loggedInUser") Person user,
-            Model model
-    ){
+    public String editProfile(Model model) {
 
-        if (user.getPersonType() != PersonType.STUDENT) {
-            return "redirect:/login";
-        }
+        Person student = requireStudent();
 
-        model.addAttribute("student", user);
+        model.addAttribute("student", student);
         model.addAttribute("editMode", true);
 
         return "student-profile";
@@ -143,7 +142,7 @@ public class StudentController {
 
     @PostMapping("/profile/edit")
     public String updateProfile(
-            @SessionAttribute("loggedInUser") Person user,
+            @AuthenticationPrincipal ApplicationUserDetails userDetails,
             @RequestParam String firstName,
             @RequestParam String lastName,
             @RequestParam String email,
@@ -151,62 +150,50 @@ public class StudentController {
             Model model
     ){
 
-        if (user.getPersonType() != PersonType.STUDENT) {
-            return "redirect:/login";
-        }
+        Long personId = userDetails.getId();
 
+        Person student = personService.findById(personId)
+                .orElseThrow(() -> new IllegalStateException("Logged-in student not found"));
 
         personService.updateStudentProfile(
-                user,
+                student,
                 firstName,
                 lastName,
                 email,
                 phone
         );
 
-        model.addAttribute("student", user);
+        model.addAttribute("student", student);
         model.addAttribute("editMode", false);
-        model.addAttribute("successMessage", "Τα στοιχεία σάς ενημερώθηκαν!!!");
+        model.addAttribute("successMessage", "Τα στοιχεία σάς ενημερώθηκαν!!! ");
 
         //return "redirect:/student/profile";
         return "student-profile";
     }
 
-
+    /* =========================================================
+       Bookings
+       ========================================================= */
 
     @GetMapping("/bookings")
-    public String studentBookings(
-            @SessionAttribute("loggedInUser") Person user,
-            Model model
-    ){
+    public String bookings(Model model) {
 
-        //Security
-        if (user.getPersonType() != PersonType.STUDENT) {
-            return "redirect:/login";
-        }
+        Person student = requireStudent();
 
-        //Ελέγχουμε για penalty αυτόματα
-        bookingService.checkAndApplyPenalties(user);
+        bookingService.checkAndApplyPenalties(student);
 
         //Όλες οι κρατήσεις για τον φοιτητή
-        List<Booking> bookings = bookingService.getBookingsByStudent(user);
+        List<Booking> bookings = bookingService.getBookingsByStudent(student);
 
         model.addAttribute("bookings", bookings);
-
         return "student-bookings";
     }
 
-    //CreateRoom
     @GetMapping("/bookings/create/{roomId}")
-    public String showCreateBookingForm(
+    public String createBookingForm(
             @PathVariable Long roomId,
-            @SessionAttribute("loggedInUser") Person student,
             Model model
     ) {
-        if (student.getPersonType() != PersonType.STUDENT) {
-            return "redirect:/login";
-        }
-
         Room room = roomService.getRoomById(roomId);
 
         model.addAttribute("room", room);
@@ -215,40 +202,27 @@ public class StudentController {
         return "student-booking-create";
     }
 
-
     @PostMapping("/bookings/create/{roomId}")
     public String createBooking(
             @PathVariable Long roomId,
-            @SessionAttribute("loggedInUser") Person student,
             @RequestParam(required = false) LocalDate date,
             @RequestParam(required = false) LocalTime startTime,
             @RequestParam(required = false) LocalTime endTime,
             Model model
     ) {
-        if (student.getPersonType() != PersonType.STUDENT) {
-            return "redirect:/login";
-        }
+        Person student = requireStudent();
 
         if (date == null || startTime == null || endTime == null) {
             Room room = roomService.getRoomById(roomId);
             model.addAttribute("room", room);
             model.addAttribute("today", LocalDate.now());
-            //model.addAttribute("errorMessage", "Συμπλήρωσε ημερομηνία και ώρες.");
             return "student-booking-create";
         }
 
-
         BookingResult result = bookingService.bookRoom(
-                new BookingRequest(
-                        roomId,
-                        student.getId(),
-                        date,
-                        startTime,
-                        endTime
-                )
+                new BookingRequest(roomId, student.getId(), date, startTime, endTime)
         );
 
-        //Πέρασμα του κατάλληλου error.
         if (!result.success()) {
             Room room = roomService.getRoomById(roomId);
             model.addAttribute("room", room);
@@ -256,23 +230,15 @@ public class StudentController {
             model.addAttribute("today", LocalDate.now());
             return "student-booking-create";
         }
-        //Επιτυχία Δημιουργείας Κράτησης
+
         return "redirect:/student/bookings";
     }
-
-
-
 
     @PostMapping("/bookings/cancel/{id}")
     public String cancelBooking(
             @PathVariable Long id,
-            @SessionAttribute("loggedInUser") Person user,
             RedirectAttributes redirectAttributes
-    ){
-
-        if (user.getPersonType() != PersonType.STUDENT) {
-            return "redirect:/login";
-        }
+    ) {
 
         BookingResult result = bookingService.cancelBooking(id);
 
@@ -291,18 +257,11 @@ public class StudentController {
         return "redirect:/student/bookings";
     }
 
-
-
     @PostMapping("/bookings/checkin/{id}")
-    public String checkInBooking(
+    public String checkIn(
             @PathVariable Long id,
-            @SessionAttribute("loggedInUser") Person user,
             RedirectAttributes redirectAttributes
     ) {
-
-        if (user.getPersonType() != PersonType.STUDENT) {
-            return "redirect:/login";
-        }
 
         BookingResult result = bookingService.checkIn(id);
 
@@ -321,20 +280,17 @@ public class StudentController {
         return "redirect:/student/bookings";
     }
 
+    /* =========================================================
+       Penalties
+       ========================================================= */
 
     //Προβολή Penalties (O φοιτητης δεν μπορεί να μεταβάλλει τα penalties ή να τα διαγράψει, μόνο η γραμματεία)
     @GetMapping("/penalties")
-    public String myPenalties(
-            @SessionAttribute("loggedInUser") Person user,
-            Model model
-    ){
+    public String penalties(Model model) {
 
+        Person student = requireStudent();
 
-        if (user.getPersonType() != PersonType.STUDENT) {
-            return "redirect:/login";
-        }
-
-        List<Penalty> penalties = penaltyServiceImpl.getPenaltiesForStudent(user);
+        List<Penalty> penalties = penaltyService.getPenaltiesForStudent(student); //debug penaltyServiceImpl
 
         model.addAttribute("penalties", penalties);
         model.addAttribute("today", LocalDate.now());
@@ -343,32 +299,6 @@ public class StudentController {
 
     }
 
-
-
-
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

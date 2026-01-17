@@ -23,12 +23,12 @@ public class BookingController {
 
     // Λίστα κρατήσεων για το Literature Panel
     @GetMapping("/literature/bookings")
-    public String getAllBookings(Model model,@SessionAttribute("loggedInUser") Person user){
+    public String getAllBookings(Model model){
 
         //Δεύτερος έλεγχος (1ος στο LogIn Controller) τύπου person ωστε, ακόμα και αν κάποιος προσπαθήσει να έχει Direct URL access, να αποτραπεί.
-        if (user.getPersonType() != PersonType.LITERATURE) {
-            return "redirect:/login";
-        }
+        //if (user.getPersonType() != PersonType.LITERATURE) {
+       //     return "redirect:/login";
+       // }
 
         List<Booking> bookings = bookingService.getAllBookings();
         model.addAttribute("bookings", bookings);
@@ -37,12 +37,12 @@ public class BookingController {
 
 
     @PostMapping("/literature/bookings/cancel/{id}")
-    public String cancelBooking(@PathVariable Long id,@SessionAttribute("loggedInUser") Person user){
+    public String cancelBooking(@PathVariable Long id){
 
         //Δεύτερος έλεγχος (1ος στο LogIn Controller) τύπου person ωστε, ακόμα και αν κάποιος προσπαθήσει να έχει Direct URL access, να αποτραπεί.
-        if (user.getPersonType() != PersonType.LITERATURE) {
-            return "redirect:/login";
-        }
+        //if (user.getPersonType() != PersonType.LITERATURE) {
+         //   return "redirect:/login";
+            //}
 
         bookingService.cancelBooking(id); // Αλλάζει μόνο το πεδίο canceled σε true
         return "redirect:/literature/bookings";

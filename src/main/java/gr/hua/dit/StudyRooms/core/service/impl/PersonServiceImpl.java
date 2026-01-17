@@ -10,14 +10,17 @@ import gr.hua.dit.StudyRooms.core.service.PersonService;
 import gr.hua.dit.StudyRooms.core.service.model.CreatePersonRequest;
 import gr.hua.dit.StudyRooms.core.service.model.CreatePersonResult;
 import gr.hua.dit.StudyRooms.core.service.model.PersonView;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Constraint;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -30,6 +33,8 @@ public final class PersonServiceImpl implements PersonService {
 
     @Autowired
     private AuthService authService;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     //Constructor
     public PersonServiceImpl(final Validator validator,final PersonRepository personRepository, final PersonMapper personMapper) {
@@ -78,8 +83,9 @@ public final class PersonServiceImpl implements PersonService {
         final String lastName = createPersonRequest.LastName().strip();
         final String email = createPersonRequest.Email().strip();
         final String phone = createPersonRequest.Phone().strip();
-        final String passwordHash = createPersonRequest.passwordHash().strip();
-
+        final String password = createPersonRequest.passwordHash().strip();
+        if (passwordEncoder == null) throw new NullPointerException("passwordEncodes is null");
+        final String passwordHash = passwordEncoder.encode(password);
 
         // Email address validation.
         if (!email.toLowerCase().endsWith("@hua.gr")) {
@@ -135,6 +141,17 @@ public final class PersonServiceImpl implements PersonService {
 
         personRepository.save(student);
     }
+
+    @Override
+    public Optional<Person> findById(Long id) {
+        return personRepository.findById(id);
+    }
+
+    public Person getRequiredById(Long id) {
+        return personRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Person not found"));
+    }
+
 
 }
 

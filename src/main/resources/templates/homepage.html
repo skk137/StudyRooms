@@ -1,53 +1,91 @@
 <!DOCTYPE html>
-<html lang="el" xmlns:th="http://www.thymeleaf.org">
+<html lang="el"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <title>Study Rooms</title>
+    <title>📚 Study Rooms</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
+<body class="bg-light">
 
-<!-- Navbar -->
-<nav class="navbar navbar-light bg-light px-4">
-    <span class="navbar-brand">📚 Study Rooms</span>
+<!-- ================= NAVBAR ================= -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm px-4">
+    <a class="navbar-brand fw-bold" href="/">📚 Study Rooms</a>
 
-    <div>
-        <a href="/login" class="btn btn-outline-primary me-2">Login</a>
-        <a href="/register" class="btn btn-primary">Register</a>
+    <div class="ms-auto">
+
+        <!-- Αν ΔΕΝ είναι συνδεδεμένος -->
+        <div sec:authorize="isAnonymous()">
+            <a th:href="@{/login}" class="btn btn-outline-primary me-2">Login</a>
+            <a th:href="@{/register}" class="btn btn-primary">Register</a>
+        </div>
+
+        <!-- Αν ΕΙΝΑΙ συνδεδεμένος -->
+        <div sec:authorize="isAuthenticated()">
+            <a th:href="@{/dashboard}" class="btn btn-success me-2">Dashboard</a>
+
+            <form th:action="@{/logout}" method="post" class="d-inline">
+                <!-- CSRF token (χρειάζεται αν το UI chain έχει CSRF enabled) -->
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <button type="submit" class="btn btn-outline-danger">Logout</button>
+            </form>
+        </div>
+
     </div>
 </nav>
 
-<div class="container mt-4">
-    <h2 class="mb-4">Διαθέσιμοι Χώροι Μελέτης</h2>
+<!-- ================= CONTENT ================= -->
+<div class="container mt-5">
+
+    <h2 class="mb-4 text-center">Διαθέσιμοι Χώροι Μελέτης</h2>
+
+    <!-- Αν δεν υπάρχουν δωμάτια -->
+    <div class="alert alert-info text-center" th:if="${#lists.isEmpty(rooms)}">
+        Δεν υπάρχουν διαθέσιμοι χώροι αυτή τη στιγμή.
+    </div>
 
     <div class="row">
         <div class="col-md-4 mb-4" th:each="room : ${rooms}">
             <div class="card shadow-sm h-100">
+
                 <div class="card-body d-flex flex-column">
+                    <h5 class="card-title" th:text="${room.name}">Room Name</h5>
 
-                    <h5 class="card-title" th:text="${room.name}"></h5>
                     <p class="card-text">
-                        <strong>Χωρητικότητα:</strong>
-                        <span th:text="${room.capacity}"></span><br>
-
+                        <strong>Χωρητικότητα:</strong> <span th:text="${room.capacity}"></span><br>
                         <strong>Ώρες:</strong>
-                        <span th:text="${room.openTime}"></span>
-                        -
+                        <span th:text="${room.openTime}"></span> -
                         <span th:text="${room.closeTime}"></span>
                     </p>
 
                     <div class="mt-auto text-center">
-                        <span class="text-muted">
-                            🔒 Συνδεθείτε για να κάνετε κράτηση.
-                        </span>
-                    </div>
 
+                        <!-- Ανώνυμος χρήστης -->
+                        <span class="text-muted" sec:authorize="isAnonymous()">
+                            🔒 Συνδεθείτε για να κάνετε κράτηση
+                        </span>
+
+                        <!-- Logged in χρήστης (και ΜΟΝΟ Student για να μην μπορούν άλλοι ρόλοι) -->
+                        <a sec:authorize="hasRole('STUDENT')"
+                           th:href="@{/student/bookings/create/{roomId}(roomId=${room.id})}"
+                           class="btn btn-primary">
+                            Κάνε Κράτηση
+                        </a>
+
+                    </div>
                 </div>
+
             </div>
         </div>
     </div>
+
 </div>
 
+<!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

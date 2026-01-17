@@ -7,6 +7,7 @@ import gr.hua.dit.StudyRooms.core.service.model.CreatePersonResult;
 import gr.hua.dit.StudyRooms.core.service.model.PersonView;
 
 import java.util.List;
+import java.util.Optional;
 
 //for managing persons(students/literature)
 public interface PersonService {
@@ -25,6 +26,7 @@ public interface PersonService {
     );
 
 
+    Optional<Person> findById(Long id);
 
 
 

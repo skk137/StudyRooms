@@ -1,10 +1,16 @@
 package gr.hua.dit.StudyRooms.config;
 
+import gr.hua.dit.StudyRooms.core.model.PersonType;
+import gr.hua.dit.StudyRooms.core.security.ApplicationUserDetails;
+import gr.hua.dit.StudyRooms.core.security.ApplicationUserDetailsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,68 +24,65 @@ import org.springframework.security.web.SecurityFilterChain;
  * Security configuration.
  */
 @Configuration
+@EnableWebSecurity
 @EnableMethodSecurity // enables @PreAuthorize
 public class SecurityConfig {
 
-    /**
-     * API chain {@code "/api/v1/**"} (stateless, Basic Auth).
-     */
     @Bean
     @Order(1)
-    public SecurityFilterChain apiChain(final HttpSecurity http) throws Exception {
+    public SecurityFilterChain apiChain(HttpSecurity http) throws Exception {
         http
                 .securityMatcher("/api/v1/**")
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/**").authenticated()
+                        .anyRequest().authenticated()
                 )
-                .httpBasic(basic -> {}); // ✅ Basic Auth for integration user
+                .httpBasic(Customizer.withDefaults());
 
         return http.build();
     }
 
-    /**
-     * UI chain {@code "/**"} (stateful).
-     *
-     * NOTE: The StudyRooms app currently uses custom session-based login
-     * (see loginController + HttpSession), not Spring Security formLogin.
-     * So we keep UI permissive to avoid breaking the existing flow.
-     */
     @Bean
     @Order(2)
-    public SecurityFilterChain uiChain(final HttpSecurity http) throws Exception {
+    public SecurityFilterChain uiChain(HttpSecurity http) throws Exception {
         http
-                .securityMatcher("/**")
-                .csrf(csrf -> csrf.disable())
+                .csrf(Customizer.withDefaults())
+
                 .authorizeHttpRequests(auth -> auth
-                        // Swagger public
-                        .requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll()
+                        .requestMatchers("/", "/login", "/register",
+                                "/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
+                        .requestMatchers("/student/**").hasRole("STUDENT")
+                        .requestMatchers("/literature/**").hasRole("LITERATURE")
+                        .anyRequest().authenticated()
+                )
 
-                        // Public UI pages (your controllers manage access with @SessionAttribute checks)
-                        .requestMatchers("/", "/login", "/register").permitAll()
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        .loginProcessingUrl("/login")
+                        .defaultSuccessUrl("/", false)
+                        .failureUrl("/login?error")
+                        .permitAll()
+                )
 
-                        // Everything else allowed (your controllers already check roles)
-                        .anyRequest().permitAll()
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login?logout")
+                        .deleteCookies("JSESSIONID")
+                        .invalidateHttpSession(true)
+                        .permitAll()
                 );
 
         return http.build();
     }
 
+
+
     /**
      * Integration user (for REST API).
      * Used by @PreAuthorize("hasRole('INTEGRATION_READ')").
      */
-    @Bean
-    public UserDetailsService userDetailsService(final PasswordEncoder encoder) {
-        final UserDetails integrationUser = User.builder()
-                .username("integration")
-                .password(encoder.encode("integration123"))
-                .roles("INTEGRATION_READ") // -> ROLE_INTEGRATION_READ
-                .build();
 
-        return new InMemoryUserDetailsManager(integrationUser);
-    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {

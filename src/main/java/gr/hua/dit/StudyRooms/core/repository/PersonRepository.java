@@ -19,5 +19,8 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
 
     boolean existsByHuaId(String huaId);
 
+    Optional<Person> findByHuaIdIgnoreCase(String huaId);
+
+
 
 }
