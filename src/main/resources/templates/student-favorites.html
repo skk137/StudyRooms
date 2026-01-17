@@ -17,30 +17,6 @@
 
     <h2 class="mb-3">Τα Αγαπημένα Μου Δωμάτια</h2>
 
-    <!-- Επιλογή Ημερομηνίας & Ώρας -->
-    <form method="get" th:action="@{/student/favorites}" class="row g-3 mb-4">
-
-        <div class="col-md-3">
-            <label class="form-label">Ημερομηνία</label>
-            <input type="date" class="form-control" name="date" th:value="${date}" required>
-        </div>
-
-        <div class="col-md-3">
-            <label class="form-label">Από</label>
-            <input type="time" class="form-control" name="startTime" th:value="${startTime}" required>
-        </div>
-
-        <div class="col-md-3">
-            <label class="form-label">Έως</label>
-            <input type="time" class="form-control" name="endTime" th:value="${endTime}" required>
-        </div>
-
-        <div class="col-md-3 d-flex align-items-end">
-            <button class="btn btn-primary w-100">Έλεγχος Διαθεσιμότητας</button>
-        </div>
-
-    </form>
-
     <!-- Αγαπημένα Δωμάτια -->
     <div class="row">
         <div class="col-md-4 mb-4" th:each="room : ${favoriteRooms}">

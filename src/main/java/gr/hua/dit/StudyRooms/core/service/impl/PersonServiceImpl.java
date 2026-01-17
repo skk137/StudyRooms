@@ -84,8 +84,7 @@ public final class PersonServiceImpl implements PersonService {
         final String email = createPersonRequest.Email().strip();
         final String phone = createPersonRequest.Phone().strip();
         final String password = createPersonRequest.passwordHash().strip();
-        if (passwordEncoder == null) throw new NullPointerException("passwordEncodes is null");
-        final String passwordHash = passwordEncoder.encode(password);
+
 
         // Email address validation.
         if (!email.toLowerCase().endsWith("@hua.gr")) {
@@ -108,7 +107,7 @@ public final class PersonServiceImpl implements PersonService {
         person.setLastName(lastName);
         person.setEmail(email);
         person.setPhone(phone);
-        person.setPasswordHash(passwordHash);
+        person.setPasswordHash(password);
         person.setCreatedAt(null); // auto-generated με @CreationTimestamp
 
         // ---------------------------------------------------------------------
