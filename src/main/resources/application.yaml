@@ -22,8 +22,6 @@ spring:
       hibernate.dialect: org.hibernate.dialect.H2Dialect
       hibernate.format_sql: true
 
-
-
 server:
   servlet:
     encoding:
@@ -38,7 +36,6 @@ server:
     include-binding-errors: always
     include-exception: true
 
-
 logging:
   level:
     org.hibernate.SQL: debug
@@ -51,4 +48,14 @@ external:
     base-url: http://localhost:8081
     token: YOUR_TOKEN_HERE
 
+security:
+  jwt:
+    issuer: study-rooms
+    audience: study-rooms-api
+    ttl-minutes: 60
+    secret: "c61bYrT2ToGl5Lavh+YUd1+fCPw0iZnSc4biS5v4lfw="
 
+api:
+  integration:
+    username: integration
+    password: integration123

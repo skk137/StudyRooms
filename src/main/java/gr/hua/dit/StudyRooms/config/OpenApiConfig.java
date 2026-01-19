@@ -5,16 +5,19 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
-
 import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
  * OpenAPI (Swagger) configuration for StudyRooms.
+ *
+ * API security: Bearer JWT (Stateless)
  */
 @Configuration
 public class OpenApiConfig {
+
+    public static final String BEARER_AUTH = "BearerAuth";
 
     @Bean
     public OpenAPI openAPI() {
@@ -22,15 +25,17 @@ public class OpenApiConfig {
                 .info(new Info()
                         .title("StudyRooms API")
                         .version("v1")
-                        .description("Read-only REST API for StudyRooms (Person, Booking) – integration & analytics")
+                        .description("Stateless REST API for StudyRooms (JWT protected) – integration & analytics")
                 )
                 .components(new Components()
-                        .addSecuritySchemes("basicAuth", new SecurityScheme()
+                        .addSecuritySchemes(BEARER_AUTH, new SecurityScheme()
                                 .type(SecurityScheme.Type.HTTP)
-                                .scheme("basic")
+                                .scheme("bearer")
+                                .bearerFormat("JWT")
                         )
                 )
-                .addSecurityItem(new SecurityRequirement().addList("basicAuth"));
+                // κάνει default όλα τα endpoints να ζητάνε Authorization: Bearer <token>
+                .addSecurityItem(new SecurityRequirement().addList(BEARER_AUTH));
     }
 
     @Bean
