@@ -27,13 +27,13 @@ public class HomePageController {
                 authentication.isAuthenticated() &&
                 !(authentication instanceof AnonymousAuthenticationToken)) {
 
-            // STUDENT → student dashboard
+            // STUDENT --> student dashboard
             if (authentication.getAuthorities().stream()
                     .anyMatch(a -> a.getAuthority().equals("ROLE_STUDENT"))) {
                 return "redirect:/student/dashboard";
             }
 
-            // LITERATURE → literature dashboard
+            // LITERATURE --> literature dashboard
             if (authentication.getAuthorities().stream()
                     .anyMatch(a -> a.getAuthority().equals("ROLE_LITERATURE"))) {
                 return "redirect:/literature/dashboard";

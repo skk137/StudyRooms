@@ -27,12 +27,15 @@ public class StudentFavoriteController {
         this.personServiceImpl = personServiceImpl;
     }
 
+    //Endpoint για προσθήκη / αφαίρεση αγαπημένου δωματίου
+    //Το roomId περνάει από το URL
     @PreAuthorize("hasRole('STUDENT')")
     @PostMapping("/toggle/{roomId}")
     public String toggleFavorite(
-            @PathVariable Long roomId,
-            @AuthenticationPrincipal ApplicationUserDetails userDetails) {
+            @PathVariable Long roomId, //Πέρνουμε το id του δωματίου απο το path.
+            @AuthenticationPrincipal ApplicationUserDetails userDetails){
 
+        //Πέρνουμε id logged in χρήστη.
         Long personId = userDetails.getId();
 
         Person student = personServiceImpl.findById(personId)
@@ -40,6 +43,7 @@ public class StudentFavoriteController {
 
         favoriteService.toggleFavorite(student, roomId);
 
+        //redirect πίσω στο dashboard
         return "redirect:/student/dashboard";
     }
 

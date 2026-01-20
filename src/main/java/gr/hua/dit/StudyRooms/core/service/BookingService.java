@@ -30,4 +30,6 @@ public interface BookingService {
 
 
     void checkAndApplyPenalties(Person student);
+
 }
+

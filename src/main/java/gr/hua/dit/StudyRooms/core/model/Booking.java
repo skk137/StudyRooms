@@ -1,14 +1,11 @@
 package gr.hua.dit.StudyRooms.core.model;
 
-
 import jakarta.persistence.*;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Entity
 public class Booking {
-
 
     //@GeneratedValue
     @Id
@@ -20,7 +17,6 @@ public class Booking {
 
     @ManyToOne
     private Person student;
-
     private LocalDate date;
     private LocalTime startTime;
     private LocalTime endTime;
@@ -30,7 +26,7 @@ public class Booking {
     //Empty Constructor
     public Booking() {}
 
-
+    //Main Constructor
     public Booking(Long id, Room room, Person student,
                    LocalDate date, LocalTime startTime,
                    LocalTime endTime, boolean canceled, boolean checkedin) {
@@ -44,7 +40,7 @@ public class Booking {
         this.checkedin = checkedin;
     }
 
-
+    //Getters & Setters
     public boolean isCheckedin() {
         return checkedin;
     }

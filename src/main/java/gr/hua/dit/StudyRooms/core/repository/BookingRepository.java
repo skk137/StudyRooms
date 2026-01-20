@@ -15,7 +15,7 @@ import java.util.List;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
-    List<Booking> findByRoomAndDate(Room room, LocalDate date); //debug may not to find by date but only id...
+    List<Booking> findByRoomAndDate(Room room, LocalDate date);
     List<Booking> findByStudent(Person student);
 
 
@@ -26,11 +26,9 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
           AND b.startTime < :endTime
           AND b.endTime > :startTime
     """)
-    List<Booking> findActiveBookingsForTimeSlot(
+    List<Booking> findActiveBookingsForTimeSlot( //Ωστε να  βρίσκουμε να υπάρχουν θέσεις στο συγκεκριμένο timeslot
             @Param("date") LocalDate date,
             @Param("startTime") LocalTime startTime,
             @Param("endTime") LocalTime endTime
     );
-
-
 }

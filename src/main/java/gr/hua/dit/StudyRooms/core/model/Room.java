@@ -12,7 +12,7 @@ public class Room {
     @Id
     @GeneratedValue
     private Long id;
-    //debug if i have to use @column like Person Class
+
     private String name;
     private int capacity;
 

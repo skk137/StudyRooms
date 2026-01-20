@@ -26,28 +26,28 @@ public class PenaltyServiceImpl implements PenaltyService {
     @Override
     public Penalty cancelPenalty(Long id) { //Το θεωρούμε completed.
         Penalty penalty = penaltyRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Penalty not found"));
+                .orElseThrow(() -> new RuntimeException("To Penalty δεν βρέθηκε"));
         penalty.setCanceled(true);
         return penaltyRepository.save(penalty);
     }
 
+    //Μείωση penalty κατα μια εβ.
     @Override
     public Penalty reducePenalty(Long id) {
         Penalty penalty = penaltyRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Penalty not found"));
+                .orElseThrow(() -> new RuntimeException("To Penalty δεν βρέθηκε"));
         if (penalty.getWeeks() > 1) {
             penalty.setWeeks(penalty.getWeeks() - 1); //Εαν ειναι λιγότερο απο 2 weeks δεν πέρνει αλλο reduce μονο cancel.
         }
         return penaltyRepository.save(penalty);
     }
 
-
     @Override
     public List<Penalty> getPenaltiesForStudent(Person student) {
         return penaltyRepository.findAllByStudent(student);
     }
 
-    //Εαν έχει Penalty δεν θα μπορεί να κάνει κράτηση.
+    //Εαν έχει Penalty δεν, θα μπορεί να κάνει κράτηση.
     @Override
     public boolean hasActivePenalty(Person student) {
 
@@ -62,6 +62,5 @@ public class PenaltyServiceImpl implements PenaltyService {
     }
 
 
-
-
 }
+

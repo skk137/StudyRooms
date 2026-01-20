@@ -21,5 +21,4 @@ public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
 
     void deleteByStudentAndRoom(Person student, Room room);
 
-
 }

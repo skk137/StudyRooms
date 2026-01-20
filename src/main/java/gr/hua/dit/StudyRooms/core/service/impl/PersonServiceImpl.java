@@ -33,8 +33,7 @@ public final class PersonServiceImpl implements PersonService {
 
     @Autowired
     private AuthService authService;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+
 
     //Constructor
     public PersonServiceImpl(final Validator validator,final PersonRepository personRepository, final PersonMapper personMapper) {
@@ -78,7 +77,7 @@ public final class PersonServiceImpl implements PersonService {
         }
 
         final PersonType type = createPersonRequest.PersonType();
-        final String huaId = createPersonRequest.huaId().strip(); //removing whitespaces
+        final String huaId = createPersonRequest.huaId().strip(); //Αφαιρούμε τα πιθανά, κενά.
         final String firstName = createPersonRequest.FirstName().strip();
         final String lastName = createPersonRequest.LastName().strip();
         final String email = createPersonRequest.Email().strip();
@@ -86,7 +85,7 @@ public final class PersonServiceImpl implements PersonService {
         final String password = createPersonRequest.passwordHash().strip();
 
 
-        // Email address validation.
+        // Email address validation, ωστε μονο τα @hua mails να επιτρέπονται.
         if (!email.toLowerCase().endsWith("@hua.gr")) {
             return CreatePersonResult.fail("Μόνο emails με @hua.gr επιτρέπονται");
             //throw new IllegalArgumentException("Μόνο emails με @hua.gr επιτρέπονται");
@@ -97,10 +96,9 @@ public final class PersonServiceImpl implements PersonService {
             return CreatePersonResult.fail("Το HUA ID χρησιμοποιείται ήδη");
         }
 
-
-        //Instantiate person.
+        //Αρχικοποίηση person.
         Person person = new Person();
-        person.setId(null); // auto generated
+        person.setId(null);             //auto generated
         person.setHuaId(huaId);
         person.setPersonType(type);
         person.setFirstName(firstName);
@@ -108,14 +106,13 @@ public final class PersonServiceImpl implements PersonService {
         person.setEmail(email);
         person.setPhone(phone);
         person.setPasswordHash(password);
-        person.setCreatedAt(null); // auto-generated με @CreationTimestamp
+        person.setCreatedAt(null);      //auto-generated με @CreationTimestamp
 
         // ---------------------------------------------------------------------
         final Set<ConstraintViolation<Person>> personViolations = this.validator.validate(person);
         if (!personViolations.isEmpty()){
-            return CreatePersonResult.fail("Validation error");
+            return CreatePersonResult.fail("Validation error.");
         }
-
 
         authService.createPerson(person);
 
@@ -125,6 +122,7 @@ public final class PersonServiceImpl implements PersonService {
         return CreatePersonResult.success(personView);
     }
 
+    //Μέθοδος για ενημέρωση στοιχείων, μαθητή.
     @Override
     public void updateStudentProfile(
             Person student,
@@ -141,17 +139,11 @@ public final class PersonServiceImpl implements PersonService {
         personRepository.save(student);
     }
 
+    //Εύρεση μαθητή μέσω id.
     @Override
     public Optional<Person> findById(Long id) {
         return personRepository.findById(id);
     }
 
-    public Person getRequiredById(Long id) {
-        return personRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Person not found"));
-    }
-
-
 }
-
 

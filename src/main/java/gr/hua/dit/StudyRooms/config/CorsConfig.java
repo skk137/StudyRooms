@@ -6,14 +6,12 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
- * CORS Configuration for StudyRooms REST API.
- *
- * Notes:
+ * CORS Configuration ΓΙΑ ΤΟ StudyRooms REST API.
  * - CORS αφορά κυρίως SPA / external clients σε browser.
- * - Για το UI (Thymeleaf) δεν χρειάζεται.
+ * - Για το UI εδώ (Τhymeleaf) δεν χρειάζεται.
  */
 @Configuration
-public class CorsConfig {
+public class CorsConfig{
 
     @Bean
     public WebMvcConfigurer corsConfigurer() {
@@ -24,7 +22,8 @@ public class CorsConfig {
             public void addCorsMappings(final CorsRegistry registry) {
 
                 registry.addMapping("/api/v1/**")
-                        // Για demo/dev (Swagger/SPA local). Αν έχετε SPA σε άλλο port βάλε το αντίστοιχο.
+                        /// Ορίζει σε ποια endpoints εφαρμόζεται το CORS
+                        // Εδώ: όλα τα endpoints κάτω από /api/v1/
                         .allowedOrigins(
                                 "http://localhost",
                                 "http://localhost:3000",
@@ -34,7 +33,7 @@ public class CorsConfig {
                         )
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
                         .allowedHeaders("*")
-                        // JWT = Authorization header, άρα δεν χρειάζεσαι cookies στο API
+                        //JWT= Authorization header, άρα δεν χρειάζεσαι cookies στο API
                         .allowCredentials(false)
                         .maxAge(3600);
             }

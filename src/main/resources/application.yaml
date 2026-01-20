@@ -1,61 +1,72 @@
+# Ρυθμίσεις SpringDoc / OpenAPI
+# Παρέχουν endpoints για παραγωγή API documentation και Swagger UI
 springdoc:
   api-docs:
-    path: /v3/api-docs
+    path: /v3/api-docs        # Endpoint που επιστρέφει το OpenAPI JSON
   swagger-ui:
-    path: /swagger-ui.html
+    path: /swagger-ui.html    # Web UI για δοκιμή των endpoints
 
 spring:
   application:
-    name: StudyRooms
+    name: StudyRooms          # Όνομα εφαρμογής (χρησιμοποιείται και σε logs/monitoring)
 
+  # Ρυθμίσεις σύνδεσης με τη βάση δεδομένων (H2)
   datasource:
     url: jdbc:h2:file:./LOCAL_DATA/h2/app;DB_CLOSE_DELAY=-1;DATABASE_TO_LOWER=TRUE
-    username: studydb
-    password: 137
+    # H2 σε file mode (persistent τοπικά), με ρυθμίσεις ώστε να μην κλείνει η βάση όταν κλείνει το connection
+    username: studydb         # Username βάσης
+    password: 137             # Password βάσης
     driver-class-name: org.h2.Driver
 
+  # Ρυθμίσεις JPA / Hibernate
   jpa:
     hibernate:
-      ddl-auto: create-drop
-    open-in-view: false
+      ddl-auto: create-drop   # Δημιουργεί σχήμα στην εκκίνηση και το διαγράφει στο shutdown
+    open-in-view: false       # Κλείνει το Open Session in View
     properties:
       hibernate.dialect: org.hibernate.dialect.H2Dialect
-      hibernate.format_sql: true
+      hibernate.format_sql: true  # Μορφοποιεί τα SQL logs για πιο εύκολη ανάγνωση
 
 server:
   servlet:
     encoding:
-      charset: UTF-8
+      charset: UTF-8          # Default encoding για requests/responses
       enabled: true
-      force: true
+      force: true             # Επιβάλλει UTF-8 για αποφυγή προβλημάτων με ελληνικούς χαρακτήρες
 
+  # Ρυθμίσεις εμφάνισης σφαλμάτων σε responses
   error:
     whitelabel:
-      enabled: false
-    include-message: always
-    include-binding-errors: always
-    include-exception: true
+      enabled: false          # Απενεργοποιεί το default Spring "whitelabel" error page
+    include-message: always   # Επιστρέφει το message του exception στο response
+    include-binding-errors: always  # Επιστρέφει validation/binding errors
+    include-exception: true   # Περιλαμβάνει πληροφορία exception
 
+# Ρυθμίσεις logging (κυρίως για debugging βάσης)
 logging:
   level:
-    org.hibernate.SQL: debug
-    org.hibernate.orm.jdbc.bind: trace
+    org.hibernate.SQL: debug          # Εμφανίζει τα SQL queries
+    org.hibernate.orm.jdbc.bind: trace # Εμφανίζει τις τιμές που γίνονται bind στα prepared statements
 
+# Ρυθμίσεις εξωτερικών υπηρεσιών (external integrations)
 external:
   holidays:
-    country: GR
+    country: GR               # Χώρα για ανάκτηση επίσημων αργιών
   noc:
-    base-url: http://localhost:8081
-    token: YOUR_TOKEN_HERE
+    base-url: http://localhost:8081  # Base URL για την υπηρεσία ειδοποιήσεων (SMS)
+    token: YOUR_TOKEN_HERE           # Token πρόσβασης
 
+# Ρυθμίσεις ασφάλειας JWT
 security:
   jwt:
-    issuer: study-rooms
-    audience: study-rooms-api
-    ttl-minutes: 60
+    issuer: study-rooms       # Issuer claim
+    audience: study-rooms-api # Audience claim
+    ttl-minutes: 60           # Διάρκεια ισχύος token σε λεπτά
     secret: "c61bYrT2ToGl5Lavh+YUd1+fCPw0iZnSc4biS5v4lfw="
+    # Secret για HMAC υπογραφή JWT
 
+# Credentials για service-to-service integration client
 api:
   integration:
-    username: integration
-    password: integration123
+    username: integration     # Client id για integration login
+    password: integration123  # Client secret για integration login

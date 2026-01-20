@@ -1,6 +1,5 @@
 package gr.hua.dit.StudyRooms.core.service.impl;
 
-
 import gr.hua.dit.StudyRooms.core.model.Favorite;
 import gr.hua.dit.StudyRooms.core.model.Person;
 import gr.hua.dit.StudyRooms.core.model.Room;
@@ -28,22 +27,25 @@ public class FavoriteServiceImpl implements FavoriteService {
         this.roomRepository = roomRepository;
     }
 
-
+    //
     @Override
     public void toggleFavorite(Person student, Long roomId) {
 
+        //Βρίσκουμε το δωμάτιο με βάση το id
         Room room = roomRepository.findById(roomId)
-                .orElseThrow(() -> new RuntimeException("Room not found"));
+                .orElseThrow(() -> new RuntimeException("Το δωμάτιο, δέν βρέθηκε"));
 
-        // Αν υπάρχει → remove
+        //Ελέγχουμε αν υπάρχει ήδη εγγραφή Favorite
         favoriteRepository.findByStudentAndRoom(student, room)
                 .ifPresentOrElse(
+                        //Αν υπάρχει τοτε το βγάζουμε απο αγαπημένα.
                         favoriteRepository::delete,
+                        //Αν δεν υπάρχει, δημιουργούμε, νεα εγγραφή favorite.
                         () -> favoriteRepository.save(new Favorite(student, room))
                 );
     }
 
-
+    //Βρίσκουμε τα αγαπημένα δωμάτια, του student.
     @Override
     public Set<Long> getFavoriteRoomIds(Person student) {
         return favoriteRepository.findAllByStudent(student)
@@ -61,8 +63,7 @@ public class FavoriteServiceImpl implements FavoriteService {
                 .toList();
     }
 
-
-
 }
+
 
 

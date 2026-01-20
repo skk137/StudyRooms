@@ -1,6 +1,5 @@
 package gr.hua.dit.StudyRooms.core.model;
 
-
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -14,11 +13,11 @@ public class Penalty {
     private Long id;
 
     @ManyToOne
-    private Person student;  // Φοιτητής
+    private Person student;  // Φοιτητής που έχει το penalty.
 
-    private int weeks;  // Διάρκεια Ποινής (0 εως 8 Εβδομάδες ) Εαν ειναι 0 η cacncelled θα θεωρείται χωρίς ποινή!
+    private int weeks;  // Διάρκεια Ποινής (0 εως 8 Εβδομάδες) Εαν ειναι 0 η cacncelled θα θεωρείται χωρίς ποινή!
 
-    private boolean canceled; // αν η ποινή έχει ακυρωθεί
+    private boolean canceled; // Αν η ποινή έχει ακυρωθεί
 
     private LocalDate startDate;
     private LocalDate endDate;
@@ -35,6 +34,7 @@ public class Penalty {
         this.endDate =endDate;
     }
 
+    //getters & setters
     public long getRemainingDays() {
         return ChronoUnit.DAYS.between(LocalDate.now(), endDate);
     }

@@ -32,6 +32,7 @@ public class registrationController {
         return "register";
     }
 
+    //Εγγραφή Χρήστη
     @PostMapping("/register")
     public String submit(Authentication authentication,
                          @ModelAttribute("createPersonRequest") CreatePersonRequest createPersonRequest,

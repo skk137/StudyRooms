@@ -11,43 +11,70 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-/**
- * REST controller for API authentication (integration client -> JWT token).
- */
+// REST controller για αυθεντικοποίηση API integration clients
+// Εκδίδει JWT tokens που χρησιμοποιούνται για πρόσβαση στο REST API
 @RestController
-@RequestMapping(value = "/api/v1/auth", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(
+        value = "/api/v1/auth",
+        produces = MediaType.APPLICATION_JSON_VALUE
+)
 public class ClientAuthResource {
 
+    // Service που ελέγχει τα credentials του integration client
     private final ClientDetailsService clientDetailsService;
+
+    // Service για έκδοση και επαλήθευση JWT
     private final JWTSecurity jwtService;
 
-    public ClientAuthResource(ClientDetailsService clientDetailsService, JWTSecurity jwtService) {
-        if (clientDetailsService == null) throw new NullPointerException("clientDetailsService is null");
-        if (jwtService == null) throw new NullPointerException("jwtService is null");
+    // Constructor  services
+    public ClientAuthResource(
+            ClientDetailsService clientDetailsService,
+            JWTSecurity jwtService
+    ) {
+        if (clientDetailsService == null)
+            throw new NullPointerException("clientDetailsService is null");
+        if (jwtService == null)
+            throw new NullPointerException("jwtService is null");
+
         this.clientDetailsService = clientDetailsService;
         this.jwtService = jwtService;
     }
 
-    /**
-     * POST /api/v1/auth/login
-     * Request:  { "clientId": "...", "clientSecret": "..." }
-     * Response: { "accessToken": "...", "tokenType": "Bearer", "expiresIn": 3600 }
-     */
+    // Endpoint αυθεντικοποίησης API client
+    // Δέχεται clientId και clientSecret και επιστρέφει JWT
     @PostMapping("/login")
-    public ClientTokenResponse login(@RequestBody @Valid ClientTokenRequest request) {
+    public ClientTokenResponse login(
+            @RequestBody @Valid ClientTokenRequest request
+    ) {
 
+        // Ανάκτηση στοιχείων client από το request
         String clientId = request.clientId();
         String clientSecret = request.clientSecret();
 
-        // Step 1: authenticate integration client
-        ClientDetails client = clientDetailsService.authenticate(clientId, clientSecret).orElse(null);
+        // Έλεγχος ταυτότητας integration client
+        ClientDetails client =
+                clientDetailsService.authenticate(clientId, clientSecret)
+                        .orElse(null);
+
+        // Αν αποτύχει το authentication, επιστρέφεται 401
         if (client == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid client credentials");
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED,
+                    "Invalid client credentials"
+            );
         }
 
-        // Step 2: issue JWT
-        String token = jwtService.issue("client:" + client.id(), client.roles().stream().toList());
+        // Έκδοση JWT με βάση το client id και τους ρόλους του
+        String token = jwtService.issue(
+                "client:" + client.id(),
+                client.roles().stream().toList()
+        );
 
-        return new ClientTokenResponse(token, "Bearer", 60 * 60);
+        // Επιστροφή token response
+        return new ClientTokenResponse(
+                token,
+                "Bearer",
+                60 * 60
+        );
     }
 }

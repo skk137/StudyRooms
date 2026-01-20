@@ -10,27 +10,25 @@ public class Favorite {
     private Long id;
 
     @ManyToOne(optional = false)
-    private Person student;
+    private Person student; //Σε ποιοον student ανήκει
 
     @ManyToOne(optional = false)
-    private Room room;
+    private Room room;     //Το δωμάτιο, που δηλώνεται, ως αγαπημένο.
 
     //Empty Constructor
     public Favorite() {
     }
-
+    //Constructor
     public Favorite(Long id, Person student, Room room) {
         this.id = id;
         this.student = student;
         this.room = room;
     }
-
-
+    //Constructor
     public Favorite(Person student, Room room) {
         this.student = student;
         this.room = room;
     }
-
 
     //Getters & Setters
     public Long getId() {
@@ -56,7 +54,6 @@ public class Favorite {
     public void setRoom(Room room) {
         this.room = room;
     }
-
-
-
 }
+
+

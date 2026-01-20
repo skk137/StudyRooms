@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
-
 @Service
 public class RoomServiceImpl implements RoomService {
 
@@ -25,7 +24,7 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public Room createRoom(RoomRequest request) {
+    public Room createRoom(RoomRequest request) { //Request για δημιουργεία δωματίου.
         Room room = new Room();
         room.setName(request.name());
         room.setCapacity(request.capacity());
@@ -34,11 +33,13 @@ public class RoomServiceImpl implements RoomService {
         return roomRepository.save(room);
     }
 
+    //Βρίσκουμε το room μέσω id.
     @Override
     public Room getRoomById(Long id) {
         return roomRepository.findById(id).orElseThrow();
     }
 
+    //Update room details.
     @Override
     public void updateRoom(Long id, RoomRequest request) {
         Room room = getRoomById(id);
@@ -49,6 +50,7 @@ public class RoomServiceImpl implements RoomService {
         roomRepository.save(room);
     }
 
+    //Διαγραφή room.
     @Override
     public void deleteRoom(Long id) {
         roomRepository.deleteById(id);

@@ -4,10 +4,18 @@ import gr.hua.dit.StudyRooms.web.rest.ClientAuthResource;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-/**
- * @see ClientAuthResource
- */
+// DTO που αναπαριστά αίτημα αυθεντικοποίησης API client
+// Χρησιμοποιείται από το ClientAuthResource για έκδοση JWT
 public record ClientTokenRequest(
-        @NotNull @NotBlank String clientId,
-        @NotNull @NotBlank String clientSecret
+
+        // Αναγνωριστικό του API client
+        @NotNull
+        @NotBlank
+        String clientId,
+
+        // Μυστικό κλειδί του API client
+        @NotNull
+        @NotBlank
+        String clientSecret
+
 ) {}

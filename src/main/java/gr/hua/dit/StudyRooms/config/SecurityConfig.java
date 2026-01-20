@@ -21,7 +21,14 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     /**
-     * API chain (stateless, JWT) for /api/v1/**
+     * Ρύθμιση Spring Security για το REST API της εφαρμογής.
+     *
+     * Το συγκεκριμένο SecurityFilterChain:
+     * - Εφαρμόζεται μόνο στα endpoints /api/v1/**
+     * - Χρησιμοποιεί JWT authentication (stateless)
+     * - Επιτρέπει public πρόσβαση σε authentication endpoints και Swagger
+     * - Απαιτεί authentication για όλα τα υπόλοιπα API requests
+     * - Δεν χρησιμοποιεί form login ή redirects (κατάλληλο για REST)
      */
     @Bean
     @Order(1)
@@ -33,26 +40,27 @@ public class SecurityConfig {
         http
                 .securityMatcher("/api/v1/**")
                 .csrf(AbstractHttpConfigurer::disable)
+                // Stateless session (χωρίς HTTP session)
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 .authorizeHttpRequests(auth -> auth
-                        // ✅ allow preflight
+                        // Επιτρέπεται το CORS preflight
                         .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
 
-                        // ✅ public: token endpoint
+                        // Public endpoints για authentication (login / refresh token)
                         .requestMatchers("/api/v1/auth/**").permitAll()
 
-                        // ✅ allow swagger docs (so swagger-ui can load them)
+                        // Public πρόσβαση στο Swagger
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
 
-                        // everything else in /api/v1 needs auth
+                        // Όλα τα υπόλοιπα API endpoints απαιτούν authentication !
                         .anyRequest().authenticated()
                 )
 
-                // JWT filter
+                // Φίλτρο JWT πριν το UsernamePasswordAuthenticationFilter
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 
-                // IMPORTANT: no redirects, no sessions
+                // Απενεργοποίηση form login & basic auth
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable);
 
@@ -60,7 +68,15 @@ public class SecurityConfig {
     }
 
     /**
-     * UI chain (stateful, formLogin) for everything else
+     * Ρύθμιση του  Spring Security για το UI της εφαρμογής :
+     *
+     *  Το συγκεκριμένο SecurityFilterChain:
+     * - Εφαρμόζεται σε όλα τα UI endpoints
+     * - Εξαιρεί πλήρως το API (/api/v1/**)
+     * - Ορίζει public σελίδες (home, login, register και static resources)
+     * - Εφαρμόζει έλεγχο πρόσβασης βάσει των ρόλων της εφαρμογής (STUDENT, LITERATURE)
+     * - Χρησιμοποιεί form-based authentication
+     * - Διαχειρίζεται logout και session invalidation
      */
     @Bean
     @Order(2)
@@ -71,35 +87,43 @@ public class SecurityConfig {
                 .csrf(Customizer.withDefaults())
 
                 .authorizeHttpRequests(auth -> auth
-                        // UI chain must NOT touch API
+                        // Το uiChain Δεν πρέπει να χειρίζεται το API.
                         .requestMatchers("/api/v1/**").denyAll()
 
-                        // swagger/ui docs
+                        // Swagger / API documentation
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
 
-                        // public pages/resources
+                        // Δημόσιες σελίδες και static resources
                         .requestMatchers("/", "/login", "/register",
                                 "/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
 
-                        // role-based UI
+                        // Έλεγχος ρόλων
                         .requestMatchers("/student/**").hasRole("STUDENT")
                         .requestMatchers("/literature/**").hasRole("LITERATURE")
-
+                        /// Όλα τα υπόλοιπα request απαιτούν authentication
                         .anyRequest().authenticated()
                 )
 
                 .formLogin(form -> form
+                        // Σελίδα login
                         .loginPage("/login")
+                        // Endpoint που επεξεργάζεται το login
                         .loginProcessingUrl("/login")
+                        // Redirect μετά από επιτυχημένο login
                         .defaultSuccessUrl("/profile", true)
+                        // Redirect σε αποτυχία login
                         .failureUrl("/login?error")
                         .permitAll()
                 )
 
                 .logout(logout -> logout
+                        // Endpoint logout
                         .logoutUrl("/logout")
+                        // Redirect μετά το logout
                         .logoutSuccessUrl("/login?logout")
+                        // Διαγραφή session cookie
                         .deleteCookies("JSESSIONID")
+                        // Ακύρωση HTTP session
                         .invalidateHttpSession(true)
                         .permitAll()
                 )
@@ -109,11 +133,17 @@ public class SecurityConfig {
         return http.build();
     }
 
+    //Κρυπτογράφηση password μέσω μηχανισμού Bcrypt.
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * Ορίζουμε AuthenticationManager της εφαρμογής,
+     * το οποίο χρησιμοποιείται από το Spring Security
+     * για τη διαδικασία αυθεντικοποίησης των χρηστών.
+     */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();

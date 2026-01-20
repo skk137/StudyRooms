@@ -11,8 +11,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
-
-
 @Service
 public class AuthServiceImpl implements AuthService {
 
@@ -34,11 +32,11 @@ public class AuthServiceImpl implements AuthService {
                             request.password(),
                             person.getPasswordHash())) {
 
-                        return LoginResult.failed("Wrong password");
+                        return LoginResult.failed("Λάθος Κωδικός");
                     }
                     return LoginResult.success(person);
                 })
-                .orElse(LoginResult.failed("User not found"));
+                .orElse(LoginResult.failed("O Χρήστης δεν βρέθηκε"));
     }
 
     public void createPerson(Person person) {
@@ -48,3 +46,4 @@ public class AuthServiceImpl implements AuthService {
     }
 
 }
+

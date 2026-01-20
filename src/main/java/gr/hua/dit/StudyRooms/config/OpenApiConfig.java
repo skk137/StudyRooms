@@ -10,9 +10,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * OpenAPI (Swagger) configuration for StudyRooms.
+ * Ρύθμιση OpenAPI/Swagger για το REST API της εφαρμογής StudyRooms.
  *
- * API security: Bearer JWT (Stateless)
+ * Η κλάση:
+ * - Ρυθμίζει JWT Bearer authentication για το Swagger UI
+ * - Κάνει default όλα τα API endpoints να απαιτούν Authorization header
+ * - Ομαδοποιεί και εμφανίζει μόνο τα endpoints του πακέτου web.rest
+ *   που αντιστοιχούν στα paths /api/v1/**
  */
 @Configuration
 public class OpenApiConfig {
@@ -25,7 +29,7 @@ public class OpenApiConfig {
                 .info(new Info()
                         .title("StudyRooms API")
                         .version("v1")
-                        .description("Stateless REST API for StudyRooms (JWT protected) – integration & analytics")
+                        .description("Stateless REST API for StudyRooms (JWT protected)")
                 )
                 .components(new Components()
                         .addSecuritySchemes(BEARER_AUTH, new SecurityScheme()
@@ -34,7 +38,7 @@ public class OpenApiConfig {
                                 .bearerFormat("JWT")
                         )
                 )
-                // κάνει default όλα τα endpoints να ζητάνε Authorization: Bearer <token>
+                // Κάνει default όλα τα endpoints να ζητάνε Authorization δλδ Bearer <token>
                 .addSecurityItem(new SecurityRequirement().addList(BEARER_AUTH));
     }
 

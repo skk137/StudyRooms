@@ -7,12 +7,8 @@
 </head>
 <body class="bg-light">
 
-
-
 <!-- Student Navbar -->
 <div th:replace="fragments/navbar-student :: studentNavbar"></div>
-
-
 
 <div class="container mt-4">
     <h2 class="mb-4">Τα Penalties Μου</h2>
@@ -39,7 +35,7 @@
 
                     <td th:text="${penalty.endDate}"></td>
 
-                    <!-- Remaining days -->
+                    <!-- Μέρες που μένουν -->
                     <td>
                         <span
                              th:if="${penalty.endDate.isAfter(today) and !penalty.isCanceled()}"
@@ -56,7 +52,7 @@
                         </span>
                     </td>
 
-                    <!-- Status -->
+                    <!-- Στάτους -->
                     <td>
                         <span class="badge bg-danger"
                               th:if="${penalty.endDate.isAfter(today) and !penalty.isCanceled()}">

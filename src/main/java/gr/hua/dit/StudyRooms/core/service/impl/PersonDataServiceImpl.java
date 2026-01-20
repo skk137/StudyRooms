@@ -10,15 +10,17 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-/**
- * Default implementation of {@link PersonDataService}.
- */
+// Υλοποίηση του service που διαχειρίζεται τα δεδομένα των χρηστών (Person)
 @Service
 public class PersonDataServiceImpl implements PersonDataService {
 
+    // Repository για πρόσβαση στη βάση δεδομένων
     private final PersonRepository personRepository;
+
+    // Mapper για μετατροπή Entity -> View model
     private final PersonMapper personMapper;
 
+    // Constructor με dependency injection
     public PersonDataServiceImpl(final PersonRepository personRepository,
                                  final PersonMapper personMapper) {
         if (personRepository == null) throw new NullPointerException();
@@ -27,13 +29,20 @@ public class PersonDataServiceImpl implements PersonDataService {
         this.personMapper = personMapper;
     }
 
+    // Επιστρέφει όλους τους χρήστες του συστήματος σε μορφή PersonView
     @Override
     public List<PersonView> getAllPeople() {
+
+        // Ανάκτηση όλων των χρηστών από τη βάση δεδομένων
         final List<Person> personList = this.personRepository.findAll();
+
+        // Μετατροπή των Person entities σε PersonView objects
         final List<PersonView> personViewList = personList
                 .stream()
                 .map(this.personMapper::convertPersonToPersonView)
                 .toList();
+
+        // Επιστροφή της λίστας
         return personViewList;
     }
 }

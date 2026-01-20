@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 @Service
 public class BookingServiceImpl implements BookingService {
 
-    private static final int MAX_ACTIVE_BOOKINGS_PER_DAY = 2;
+    private static final int MAX_ACTIVE_BOOKINGS_PER_DAY = 2; //μέγιστος αριθμός bookings ανα ημέρα.
 
     private final BookingRepository bookingRepository;
     private final RoomRepository roomRepository;
@@ -39,6 +39,7 @@ public class BookingServiceImpl implements BookingService {
     private final HolidayPort holidayPort;
     private final EmailNotificationPort emailNotificationPort;
 
+    //Constructor.
     public BookingServiceImpl(
             BookingRepository bookingRepository,
             RoomRepository roomRepository,
@@ -70,32 +71,32 @@ public class BookingServiceImpl implements BookingService {
         LocalTime end = request.endTime();
 
         if (date == null || start == null || end == null) {
-            return BookingResult.failed("Missing date/time");
+            return BookingResult.failed("Λείπει η ημερομηνία/Ώρα");
         }
 
         if (!(room.getOpenTime().isAfter(room.getCloseTime()))) { //Ο επόμενος έλεγχος θα εκτελείται μόνο για δωμάτια, τα οποία δεν ειναι με overnight ωράριο.
             if (!end.isAfter(start)) {
-                return BookingResult.failed("End time must be after start time");
+                return BookingResult.failed("Η ώρα έναρξης κράτησης, πρέπει να είναι πριν την ώρα ");
             }
         }
 
-        // Max duration 5 hours
+        // Έλεγχος μέγιστης διάρκειας κράτησης.
         Duration duration = Duration.between(start, end);
         if (duration.compareTo(Duration.ofHours(5)) > 0){
             return BookingResult.failed("Η μέγιστη διάρκεια κράτησης είναι 5 ώρες.");
         }
 
-        // 1) Holiday check (GET external service)
+        // 1) Έλεγχος ημερομηνίας αργίας (GET external service)
         if (holidayPort.isHoliday(date)) {
-            return BookingResult.failed("Cannot book on holidays.");
+            return BookingResult.failed("Δέν μπορείτε να κάνετε κράτηση, σε ημερομηνίες επίσημων Αργιών.");
         }
 
-        // 2) Penalty check
+        // Έλεγχος penalty.
         if (penaltyServiceImpl.hasActivePenalty(student)) {
-            return BookingResult.failed("Δεν μπορείτε να κάνετε κράτηση επειδή έχετε ενεργό penalty.");
+            return BookingResult.failed("Δεν μπορείτε να κάνετε κράτηση, επειδή έχετε ενεργό penalty.");
         }
 
-        // 3) Room hours check (supports normal and overnight ranges)
+        // Έλεχγος ωρών κράτησης σε σχέση με το ωράριο του δωματίου. (Κανονικό και overnight ωράρια.)
         LocalTime open = room.getOpenTime();
         LocalTime close = room.getCloseTime();
         if (open != null && close != null) {
@@ -107,7 +108,7 @@ public class BookingServiceImpl implements BookingService {
             }
         }
 
-        // 4) Max active bookings per day (student), εδώ 3.
+        //Έλεγχος για max active bookings την μέρα.
         long activeBookingsToday = bookingRepository.findByStudent(student).stream()
                 .filter(b -> !b.isCanceled())
                 .filter(b -> date.equals(b.getDate()))
@@ -117,7 +118,7 @@ public class BookingServiceImpl implements BookingService {
             return BookingResult.failed("Δεν μπορείτε να έχετε πάνω από " + MAX_ACTIVE_BOOKINGS_PER_DAY + " ενεργές κρατήσεις την ίδια ημέρα.");
         }
 
-        // 5) Capacity-aware overlap check (same room/date, overlapping)
+        //Έλεγχος ύπαρξης ανοιχτού timeslot/χωρητικότητας εκείνη την ώρα.
         long overlappingBookings = bookingRepository.findByRoomAndDate(room, date).stream()
                 .filter(b -> !b.isCanceled())
                 .filter(b -> start.isBefore(b.getEndTime()) && end.isAfter(b.getStartTime()))
@@ -127,7 +128,7 @@ public class BookingServiceImpl implements BookingService {
             return BookingResult.failed("Δεν υπάρχει διαθέσιμος χώρος στο δωμάτιο για αυτή τη χρονική περίοδο.");
         }
 
-        // 6) Save booking
+        //Save booking.
         Booking booking = new Booking();
         booking.setRoom(room);
         booking.setStudent(student);
@@ -139,7 +140,7 @@ public class BookingServiceImpl implements BookingService {
 
         bookingRepository.save(booking);
 
-        // 7) Notification (POST external service)
+        //Notification μέσω του NOC (POST external service)
         try {
             emailNotificationPort.sendSms(
                     student.getPhone(),
@@ -147,19 +148,18 @@ public class BookingServiceImpl implements BookingService {
                             + " on " + date + " (" + start + "-" + end + ")"
             );
         } catch (Exception ignored) {
-            // keep booking successful even if notification fails
+            //Ακόμα και αν δεν σταλθεί το SMS, ΤΟ ROOM δημιουργείται.
         }
-
         return BookingResult.success(booking);
     }
 
     private boolean isWithinRoomHours(LocalTime start, LocalTime end, LocalTime open, LocalTime close) {
-        // Normal hours: open < close
+        // Normal hours
         if (open.isBefore(close)) {
             return !start.isBefore(open) && !end.isAfter(close);
         }
 
-        // Overnight hours (e.g. 22:00 - 06:00)
+        // Overnight hours
         boolean startOk = !start.isBefore(open) || !start.isAfter(close);
         boolean endOk = !end.isBefore(open) || !end.isAfter(close);
         return startOk && endOk;
@@ -170,12 +170,12 @@ public class BookingServiceImpl implements BookingService {
 
         Optional<Booking> optionalBooking = bookingRepository.findById(bookingId);
         if (optionalBooking.isEmpty()) {
-            return BookingResult.failed("Booking not found");
+            return BookingResult.failed("Η κράτηση δεν βρέθηκε");
         }
 
         Booking booking = optionalBooking.get();
         if (booking.isCanceled()) {
-            return BookingResult.failed("Booking is already canceled");
+            return BookingResult.failed("Η κράτηση έχει ήδη ακυρωθεί");
         }
 
         booking.setCanceled(true);
@@ -184,7 +184,7 @@ public class BookingServiceImpl implements BookingService {
         try {
             emailNotificationPort.sendSms(
                     booking.getStudent().getPhone(),
-                    "Booking canceled for room " + booking.getRoom().getName()
+                    "Η κράτηση ακυρώθηκε για το δωμάτιο " + booking.getRoom().getName()
                             + " on " + booking.getDate()
                             + " (" + booking.getStartTime() + "-" + booking.getEndTime() + ")"
             );
@@ -235,7 +235,7 @@ public class BookingServiceImpl implements BookingService {
     public BookingResult checkIn(Long bookingId) {
 
         Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new RuntimeException("Booking not found"));
+                .orElseThrow(() -> new RuntimeException("Η κράτηση δεν βρέθηκε"));
 
         if (booking.isCanceled()) {
             return BookingResult.failed("Η κράτηση έχει ακυρωθεί");
@@ -245,7 +245,7 @@ public class BookingServiceImpl implements BookingService {
             return BookingResult.failed("Έχει ήδη γίνει check-in");
         }
 
-        // Επιτυχές check-in
+        //Επιτυχές check-in
         booking.setCheckedin(true);
         bookingRepository.save(booking);
 
@@ -258,7 +258,7 @@ public class BookingServiceImpl implements BookingService {
         LocalDate today = LocalDate.now();
         LocalTime now = LocalTime.now();
 
-        // Bookings not canceled, not checked-in, and already ended
+        // όταν η κράτηση δεν εχει γίνει cancel, ούτε checked-in, και έχει λήξει.
         List<Booking> bookingsToCheck = bookingRepository.findByStudent(student).stream()
                 .filter(b -> !b.isCanceled())
                 .filter(b -> !b.isCheckedin())
@@ -268,7 +268,7 @@ public class BookingServiceImpl implements BookingService {
                 })
                 .collect(Collectors.toList());
 
-        // If already has active penalty, do nothing
+        // Αν υπάρχει ήδη, Penalty δεν βάζουμε νέο.
         boolean hasActivePenalty = penaltyRepository.findAllByStudent(student).stream()
                 .anyMatch(p -> !p.isCanceled() && !p.getEndDate().isBefore(today));
 
